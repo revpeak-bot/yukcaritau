@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Yuk Cari Tau — Artikel & Insight Harian</title>
+  <meta name="description" content="Baca artikel informatif, ringan, dan terpercaya dari Yuk Cari Tau.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=Lora:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+  <div class="noise-overlay"></div>
+
+  <header class="site-header">
+    <div class="container header-inner">
+      <a href="/" class="logo">
+        <span class="logo-icon">✦</span>
+        <span class="logo-text">Yuk Cari Tau</span>
+      </a>
+      <nav class="main-nav" aria-label="Navigasi Utama">
+        <ul>
+          <li><a href="/" class="active">Beranda</a></li>
+          <li><a href="#">Teknologi</a></li>
+          <li><a href="#">Gaya Hidup</a></li>
+          <li><a href="#">Kesehatan</a></li>
+        </ul>
+      </nav>
+      <div class="header-actions">
+        <button class="theme-toggle" aria-label="Ganti tema">🌙</button>
+        <button class="menu-toggle" aria-label="Buka menu">
+          <span></span><span></span><span></span>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <div class="container ad-slot ad-header" aria-label="Iklan">
+    <span class="ad-label">Iklan</span>
+  </div>
+
+  <main class="container">
+    <section class="featured" id="featured">
+      <div class="skeleton-featured">
+        <div class="skeleton-img"></div>
+        <div class="skeleton-content">
+          <div class="skeleton-line short"></div>
+          <div class="skeleton-line"></div>
+          <div class="skeleton-line medium"></div>
+        </div>
+      </div>
+    </section>
+
+    <div class="section-header">
+      <h2 class="section-title">Artikel Terbaru</h2>
+      <div class="section-line"></div>
+    </div>
+    <div class="grid" id="articleGrid">
+      <!-- Skeleton cards -->
+      <div class="card skeleton-card"><div class="skeleton-img-sm"></div><div class="skeleton-content"><div class="skeleton-line short"></div><div class="skeleton-line"></div></div></div>
+      <div class="card skeleton-card"><div class="skeleton-img-sm"></div><div class="skeleton-content"><div class="skeleton-line short"></div><div class="skeleton-line"></div></div></div>
+      <div class="card skeleton-card"><div class="skeleton-img-sm"></div><div class="skeleton-content"><div class="skeleton-line short"></div><div class="skeleton-line"></div></div></div>
+    </div>
+  </main>
+
+  <footer class="site-footer">
+    <div class="container footer-inner">
+      <div class="footer-brand">
+        <span class="logo-icon">✦</span>
+        <span class="logo-text">Yuk Cari Tau</span>
+      </div>
+      <p class="footer-copy">&copy; 2026 Yuk Cari Tau. Hak cipta dilindungi.</p>
+      <nav aria-label="Footer">
+        <a href="#">Kebijakan Privasi</a>
+        <a href="#">Kontak</a>
+      </nav>
+    </div>
+  </footer>
+
+  <script src="js/script.js"></script>
+</body>
+</html>
