@@ -1,0 +1,438 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI Content Agent — Yuk Cari Tau</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=Lora:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg:#0c0c0f;--surface:#13131a;--surface2:#1a1a24;--border:#2a2a3a;
+    --accent:#7c5cfc;--accent2:#00d4aa;--warn:#f59e0b;--danger:#ef4444;
+    --text:#e8e8f0;--text2:#8888a8;
+    --font-ui:'Syne',sans-serif;--font-body:'Lora',serif;
+  }
+  *{box-sizing:border-box;margin:0;padding:0;}
+  body{background:var(--bg);color:var(--text);font-family:var(--font-ui);min-height:100vh;overflow-x:hidden;}
+  body::before{content:'';position:fixed;inset:0;background-image:linear-gradient(rgba(124,92,252,.04) 1px,transparent 1px),linear-gradient(90deg,rgba(124,92,252,.04) 1px,transparent 1px);background-size:40px 40px;pointer-events:none;z-index:0;}
+  .wrap{position:relative;z-index:1;max-width:900px;margin:0 auto;padding:2rem 1.5rem 4rem;}
+
+  .header{display:flex;align-items:center;gap:1rem;margin-bottom:2.5rem;padding-bottom:1.5rem;border-bottom:1px solid var(--border);}
+  .logo-icon{font-size:2rem;color:var(--accent);}
+  .header h1{font-size:1.6rem;font-weight:800;letter-spacing:-.03em;}
+  .header h1 span{color:var(--accent);}
+  .header-badge{margin-left:auto;background:linear-gradient(135deg,var(--accent),var(--accent2));color:#fff;font-size:.7rem;font-weight:700;letter-spacing:.1em;padding:.3rem .8rem;border-radius:100px;text-transform:uppercase;}
+
+  /* CONFIG */
+  .box{background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:1.5rem;margin-bottom:1.5rem;}
+  .box-title{font-size:.82rem;font-weight:700;color:var(--text2);text-transform:uppercase;letter-spacing:.1em;margin-bottom:1rem;}
+  .grid2{display:grid;grid-template-columns:1fr 1fr;gap:1rem;}
+  @media(max-width:580px){.grid2{grid-template-columns:1fr;}}
+  label{display:block;font-size:.8rem;color:var(--text2);margin-bottom:.35rem;font-weight:600;}
+  input{width:100%;background:var(--surface2);border:1px solid var(--border);border-radius:8px;color:var(--text);font-family:var(--font-ui);font-size:.88rem;padding:.6rem .9rem;outline:none;transition:border-color .2s;}
+  input:focus{border-color:var(--accent);}
+  input[type=password]{letter-spacing:.1em;}
+  .hint{font-size:.75rem;color:var(--text2);margin-top:.3rem;line-height:1.4;}
+  .hint a{color:var(--accent);text-decoration:none;}
+
+  /* SCHEDULE */
+  .sched-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:.75rem;margin-bottom:1.5rem;}
+  @media(max-width:580px){.sched-grid{grid-template-columns:repeat(2,1fr);}}
+  .scard{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:1rem 1.1rem;display:flex;align-items:center;gap:.7rem;}
+  .scard.ilmu{border-left:3px solid var(--accent);}
+  .scard.teknologi{border-left:3px solid var(--accent2);}
+  .scard.gayahidup{border-left:3px solid var(--warn);}
+  .scard.kesehatan{border-left:3px solid #f87171;}
+  .sc-icon{font-size:1.5rem;}
+  .sc-cat{font-size:.7rem;color:var(--text2);font-weight:700;text-transform:uppercase;letter-spacing:.06em;}
+  .sc-n{font-size:1.5rem;font-weight:800;line-height:1;}
+  .sc-lbl{font-size:.68rem;color:var(--text2);}
+
+  /* BUTTONS */
+  .action-bar{display:flex;gap:.75rem;margin-bottom:1.5rem;flex-wrap:wrap;}
+  .btn{font-family:var(--font-ui);font-weight:700;font-size:.88rem;padding:.7rem 1.4rem;border-radius:10px;border:none;cursor:pointer;transition:all .2s;display:flex;align-items:center;gap:.45rem;}
+  .btn-primary{background:linear-gradient(135deg,var(--accent),#9b7eff);color:#fff;box-shadow:0 4px 16px rgba(124,92,252,.3);}
+  .btn-primary:hover{transform:translateY(-2px);box-shadow:0 8px 24px rgba(124,92,252,.4);}
+  .btn-primary:disabled{opacity:.45;transform:none;cursor:not-allowed;}
+  .btn-outline{background:transparent;border:1px solid var(--border);color:var(--text);}
+  .btn-outline:hover{border-color:var(--accent);color:var(--accent);}
+
+  /* LOG */
+  .log-box{background:var(--surface);border:1px solid var(--border);border-radius:16px;overflow:hidden;margin-bottom:1.5rem;}
+  .log-head{display:flex;align-items:center;gap:.65rem;padding:.85rem 1.25rem;border-bottom:1px solid var(--border);background:var(--surface2);}
+  .log-head h3{font-size:.88rem;font-weight:700;}
+  .pulse{width:8px;height:8px;border-radius:50%;background:var(--accent2);animation:pulse 1.5s infinite;}
+  .pulse.idle{background:var(--text2);animation:none;}
+  .pulse.err{background:var(--danger);animation:none;}
+  @keyframes pulse{0%,100%{opacity:1;transform:scale(1);}50%{opacity:.5;transform:scale(.8);}}
+  .log-body{padding:.85rem 1.25rem;height:160px;overflow-y:auto;font-family:'Courier New',monospace;font-size:.78rem;line-height:1.7;}
+  .log-entry{display:flex;gap:.6rem;}
+  .log-t{color:var(--text2);flex-shrink:0;}
+  .log-m.ok{color:var(--accent2);}
+  .log-m.info{color:var(--text);}
+  .log-m.warn{color:var(--warn);}
+  .log-m.err{color:var(--danger);}
+  .prog-wrap{padding:0 1.25rem .85rem;}
+  .prog-track{height:4px;background:var(--surface2);border-radius:100px;overflow:hidden;}
+  .prog-fill{height:100%;background:linear-gradient(90deg,var(--accent),var(--accent2));border-radius:100px;width:0%;transition:width .4s;}
+  .prog-txt{font-size:.75rem;color:var(--text2);margin-top:.4rem;}
+
+  /* RESULTS */
+  .res-title{font-size:.82rem;font-weight:700;color:var(--text2);text-transform:uppercase;letter-spacing:.1em;margin-bottom:.75rem;}
+  .res-grid{display:flex;flex-direction:column;gap:.6rem;}
+  .rcard{background:var(--surface);border:1px solid var(--border);border-radius:11px;padding:.85rem 1.1rem;display:flex;align-items:center;gap:.85rem;transition:border-color .2s;}
+  .rcard.success{border-color:var(--accent2);}
+  .rcard.failed{border-color:var(--danger);}
+  .rcard.generating{border-color:var(--accent);}
+  .rcard.pending{opacity:.5;}
+  .rc-cat{font-size:.68rem;font-weight:700;text-transform:uppercase;letter-spacing:.07em;padding:.2rem .6rem;border-radius:6px;flex-shrink:0;}
+  .cat-ilmu{background:rgba(124,92,252,.15);color:#a78bfa;}
+  .cat-teknologi{background:rgba(0,212,170,.15);color:#00d4aa;}
+  .cat-gayahidup{background:rgba(245,158,11,.15);color:#fbbf24;}
+  .cat-kesehatan{background:rgba(248,113,113,.15);color:#f87171;}
+  .rc-info{flex:1;min-width:0;}
+  .rc-title{font-size:.88rem;font-weight:600;line-height:1.3;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+  .rc-slug{font-size:.72rem;color:var(--text2);font-family:monospace;}
+  .rc-err{font-size:.72rem;color:var(--danger);margin-top:.2rem;}
+  .rc-ico{font-size:1.1rem;flex-shrink:0;}
+
+  /* STATS */
+  .stats{display:flex;gap:1rem;flex-wrap:wrap;padding:.7rem 1.25rem;border-top:1px solid var(--border);background:var(--surface2);border-radius:0 0 16px 16px;font-size:.8rem;color:var(--text2);}
+  .stat{display:flex;align-items:center;gap:.4rem;}
+  .sdot{width:7px;height:7px;border-radius:50%;}
+
+  /* EMPTY */
+  .empty{text-align:center;padding:2.5rem;color:var(--text2);font-size:.88rem;}
+  .empty .icon{font-size:2.5rem;margin-bottom:.75rem;}
+
+  /* MODAL */
+  .modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.8);backdrop-filter:blur(6px);z-index:100;display:flex;align-items:center;justify-content:center;padding:1rem;opacity:0;pointer-events:none;transition:opacity .2s;}
+  .modal-overlay.open{opacity:1;pointer-events:all;}
+  .modal{background:var(--surface);border:1px solid var(--border);border-radius:18px;width:100%;max-width:680px;max-height:82vh;overflow:hidden;display:flex;flex-direction:column;transform:translateY(20px);transition:transform .2s;}
+  .modal-overlay.open .modal{transform:translateY(0);}
+  .modal-head{display:flex;align-items:center;justify-content:space-between;padding:1.1rem 1.4rem;border-bottom:1px solid var(--border);}
+  .modal-head h3{font-size:.95rem;font-weight:700;}
+  .modal-close{width:30px;height:30px;background:var(--surface2);border:1px solid var(--border);border-radius:7px;color:var(--text);font-size:1rem;cursor:pointer;display:flex;align-items:center;justify-content:center;}
+  .modal-body{padding:1.4rem;overflow-y:auto;flex:1;}
+  .modal-body h2,.modal-body h3{font-family:var(--font-body);margin:1rem 0 .5rem;line-height:1.3;}
+  .modal-body p{font-family:var(--font-body);line-height:1.8;margin-bottom:.9rem;color:#ccc;}
+  .modal-body ul,.modal-body ol{font-family:var(--font-body);padding-left:1.4rem;margin-bottom:.9rem;color:#ccc;}
+  .modal-body li{margin-bottom:.35rem;line-height:1.7;}
+
+  ::-webkit-scrollbar{width:5px;}
+  ::-webkit-scrollbar-thumb{background:var(--border);border-radius:10px;}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <!-- HEADER -->
+  <div class="header">
+    <div class="logo-icon">✦</div>
+    <div>
+      <h1>Yuk Cari Tau — <span>AI Agent</span></h1>
+      <div style="font-size:.78rem;color:var(--text2);margin-top:.15rem">Pembuat Konten Otomatis via Cloudflare Worker</div>
+    </div>
+    <div class="header-badge">Auto Content</div>
+  </div>
+
+  <!-- CONFIG -->
+  <div class="box">
+    <div class="box-title">⚙️ Konfigurasi Worker</div>
+    <div class="grid2">
+      <div>
+        <label>Worker URL</label>
+        <input type="text" id="cfgWorker" placeholder="https://yuk-cari-tau.USERNAME.workers.dev">
+        <div class="hint">URL Worker Cloudflare Anda. Bisa juga <code style="color:var(--accent2)">https://yukcaritau.my.id</code> jika sudah di-route.</div>
+      </div>
+      <div>
+        <label>Agent Secret</label>
+        <input type="password" id="cfgSecret" placeholder="Sama dengan AGENT_SECRET di Worker env">
+        <div class="hint">String rahasia untuk proteksi endpoint. Set di Worker → Settings → Variables.</div>
+      </div>
+    </div>
+    <div style="margin-top:.85rem;display:flex;align-items:center;gap:.75rem;">
+      <button class="btn btn-outline" style="font-size:.8rem;padding:.45rem .9rem" onclick="saveConfig()">💾 Simpan</button>
+      <button class="btn btn-outline" style="font-size:.8rem;padding:.45rem .9rem" onclick="testConnection()">🔌 Test Koneksi</button>
+      <span id="cfgStatus" style="font-size:.8rem;color:var(--accent2)"></span>
+    </div>
+  </div>
+
+  <!-- JADWAL -->
+  <div class="sched-grid">
+    <div class="scard ilmu"><div class="sc-icon">🔬</div><div><div class="sc-cat">Ilmu</div><div class="sc-n">3</div><div class="sc-lbl">artikel/hari</div></div></div>
+    <div class="scard teknologi"><div class="sc-icon">💻</div><div><div class="sc-cat">Teknologi</div><div class="sc-n">1</div><div class="sc-lbl">artikel/hari</div></div></div>
+    <div class="scard gayahidup"><div class="sc-icon">🌿</div><div><div class="sc-cat">Gaya Hidup</div><div class="sc-n">1</div><div class="sc-lbl">artikel/hari</div></div></div>
+    <div class="scard kesehatan"><div class="sc-icon">❤️</div><div><div class="sc-cat">Kesehatan</div><div class="sc-n">1</div><div class="sc-lbl">artikel/hari</div></div></div>
+  </div>
+
+  <!-- ACTION -->
+  <div class="action-bar">
+    <button class="btn btn-primary" id="btnGen" onclick="startGenerate()">✦ Generate & Upload (6 Artikel)</button>
+    <button class="btn btn-outline" onclick="clearAll()">🗑 Reset</button>
+  </div>
+
+  <!-- LOG -->
+  <div class="log-box">
+    <div class="log-head">
+      <div class="pulse idle" id="pulseEl"></div>
+      <h3 id="statusTxt">Menunggu perintah...</h3>
+    </div>
+    <div class="log-body" id="logEl">
+      <div class="log-entry"><span class="log-t">--:--:--</span><span class="log-m info">Siap. Isi Worker URL + Agent Secret lalu klik Generate.</span></div>
+    </div>
+    <div class="prog-wrap">
+      <div class="prog-track"><div class="prog-fill" id="progFill"></div></div>
+      <div class="prog-txt" id="progTxt">Menunggu...</div>
+    </div>
+  </div>
+
+  <!-- RESULTS -->
+  <div class="res-title">📄 Hasil Generate</div>
+  <div class="res-grid" id="resGrid">
+    <div class="empty"><div class="icon">🤖</div><p>Belum ada artikel. Klik <strong>Generate</strong> untuk memulai.</p></div>
+  </div>
+
+  <!-- STATS (muncul setelah selesai) -->
+  <div id="statsEl" style="display:none">
+    <div class="stats">
+      <div class="stat"><div class="sdot" style="background:var(--accent2)"></div><span id="stOk">0 berhasil</span></div>
+      <div class="stat"><div class="sdot" style="background:var(--danger)"></div><span id="stFail">0 gagal</span></div>
+      <div class="stat" style="margin-left:auto"><span id="stTime"></span></div>
+    </div>
+  </div>
+
+</div>
+
+<!-- MODAL PREVIEW -->
+<div class="modal-overlay" id="modalEl">
+  <div class="modal">
+    <div class="modal-head">
+      <h3 id="modalTitleEl">Preview</h3>
+      <button class="modal-close" onclick="closeModal()">✕</button>
+    </div>
+    <div class="modal-body" id="modalBodyEl"></div>
+  </div>
+</div>
+
+<script>
+// ── STATE ──────────────────────────────────────────────────────
+let results = [];
+let running  = false;
+let t0;
+
+// ── CONFIG ─────────────────────────────────────────────────────
+function saveConfig() {
+  localStorage.setItem('yct_worker', document.getElementById('cfgWorker').value.trim());
+  localStorage.setItem('yct_secret', document.getElementById('cfgSecret').value.trim());
+  const s = document.getElementById('cfgStatus');
+  s.textContent = '✓ Tersimpan!';
+  setTimeout(() => s.textContent = '', 2000);
+}
+
+function loadConfig() {
+  document.getElementById('cfgWorker').value = localStorage.getItem('yct_worker') || '';
+  document.getElementById('cfgSecret').value = localStorage.getItem('yct_secret') || '';
+}
+
+function getConfig() {
+  return {
+    workerUrl: document.getElementById('cfgWorker').value.trim().replace(/\/$/, ''),
+    secret:    document.getElementById('cfgSecret').value.trim(),
+  };
+}
+
+async function testConnection() {
+  const cfg = getConfig();
+  const s   = document.getElementById('cfgStatus');
+  if (!cfg.workerUrl) { s.style.color = 'var(--danger)'; s.textContent = '⚠ Isi Worker URL dulu'; return; }
+  s.style.color = 'var(--text2)'; s.textContent = 'Testing...';
+  try {
+    const res = await fetch(`${cfg.workerUrl}/api/articles?limit=1`);
+    if (res.ok || res.status === 200) { s.style.color = 'var(--accent2)'; s.textContent = '✓ Koneksi berhasil!'; }
+    else { s.style.color = 'var(--danger)'; s.textContent = `✗ Status ${res.status}`; }
+  } catch (e) { s.style.color = 'var(--danger)'; s.textContent = '✗ Tidak terhubung'; }
+  setTimeout(() => { s.textContent = ''; s.style.color = 'var(--accent2)'; }, 3000);
+}
+
+// ── LOG ────────────────────────────────────────────────────────
+function log(msg, type = 'info') {
+  const el  = document.getElementById('logEl');
+  const now = new Date().toLocaleTimeString('id-ID');
+  const row = document.createElement('div');
+  row.className = 'log-entry';
+  row.innerHTML = `<span class="log-t">${now}</span><span class="log-m ${type}">${msg}</span>`;
+  el.appendChild(row);
+  el.scrollTop = el.scrollHeight;
+}
+
+function setStatus(txt, state = 'running') {
+  document.getElementById('statusTxt').textContent = txt;
+  const p = document.getElementById('pulseEl');
+  p.className = 'pulse' + (state === 'running' ? '' : state === 'done' ? ' idle' : ' err');
+}
+
+function setProgress(msg) {
+  document.getElementById('progTxt').textContent = msg;
+}
+
+function setProgressBar(pct) {
+  document.getElementById('progFill').style.width = pct + '%';
+}
+
+// ── RENDER ─────────────────────────────────────────────────────
+function render() {
+  const grid = document.getElementById('resGrid');
+  if (!results.length) {
+    grid.innerHTML = `<div class="empty"><div class="icon">🤖</div><p>Belum ada artikel.</p></div>`;
+    return;
+  }
+
+  grid.innerHTML = results.map((r, i) => {
+    const catKey = r.category.toLowerCase().replace(' ','');
+    const ico    = r.status === 'success' ? '✅' : r.status === 'failed' ? '❌' : r.status === 'generating' ? '⚡' : '⏳';
+    return `
+      <div class="rcard ${r.status}">
+        <span class="rc-cat cat-${catKey}">${r.category}</span>
+        <div class="rc-info">
+          <div class="rc-title">${r.title || (r.status === 'generating' ? 'Sedang dibuat...' : r.status === 'pending' ? 'Menunggu...' : 'Gagal')}</div>
+          ${r.slug ? `<div class="rc-slug">/${r.slug}</div>` : ''}
+          ${r.error ? `<div class="rc-err">${r.error}</div>` : ''}
+        </div>
+        <div class="rc-ico">${ico}</div>
+        ${r.status === 'success' && r.content ? `<button onclick="preview(${i})" style="font-family:var(--font-ui);font-size:.75rem;font-weight:700;padding:.35rem .8rem;border-radius:7px;border:1px solid var(--border);background:transparent;color:var(--text2);cursor:pointer;">👁 Preview</button>` : ''}
+      </div>`;
+  }).join('');
+
+  const ok   = results.filter(r => r.status === 'success').length;
+  const fail = results.filter(r => r.status === 'failed').length;
+  document.getElementById('stOk').textContent   = `${ok} berhasil`;
+  document.getElementById('stFail').textContent = `${fail} gagal`;
+  if (t0 && ok + fail === results.length && results.length) {
+    document.getElementById('stTime').textContent = `⏱ ${((Date.now()-t0)/1000).toFixed(0)}s`;
+  }
+  document.getElementById('statsEl').style.display = results.length ? 'block' : 'none';
+}
+
+// ── MAIN GENERATE ──────────────────────────────────────────────
+async function startGenerate() {
+  if (running) return;
+  const cfg = getConfig();
+
+  if (!cfg.workerUrl) { alert('⚠️ Isi Worker URL terlebih dahulu!'); return; }
+  if (!cfg.secret)    { alert('⚠️ Isi Agent Secret terlebih dahulu!'); return; }
+
+  running = true;
+  t0      = Date.now();
+  document.getElementById('btnGen').disabled = true;
+  document.getElementById('logEl').innerHTML = '';
+  document.getElementById('statsEl').style.display = 'none';
+
+  // Init placeholder results
+  const PLAN = [
+    { category: 'Ilmu',       count: 3 },
+    { category: 'Teknologi',  count: 1 },
+    { category: 'Gaya Hidup', count: 1 },
+    { category: 'Kesehatan',  count: 1 },
+  ];
+  results = [];
+  for (const p of PLAN) {
+    for (let i = 0; i < p.count; i++) {
+      results.push({ category: p.category, status: 'pending', title: '', slug: '', content: '', error: '' });
+    }
+  }
+  render();
+  setProgressBar(0);
+  setProgress('Mengirim permintaan ke Worker...');
+  setStatus('Menghubungi Worker...', 'running');
+  log('🚀 Mengirim request ke Worker /api/generate-articles...', 'info');
+  log(`📡 Worker: ${cfg.workerUrl}`, 'info');
+
+  try {
+    // Tandai semua sebagai "generating"
+    results.forEach(r => r.status = 'generating');
+    render();
+
+    const res = await fetch(`${cfg.workerUrl}/api/generate-articles`, {
+      method:  'POST',
+      headers: {
+        'Content-Type':    'application/json',
+        'X-Agent-Secret':  cfg.secret,
+      },
+      body: JSON.stringify({ secret: cfg.secret }),
+    });
+
+    const data = await res.json();
+
+    if (!res.ok) {
+      throw new Error(data.error || `Worker error ${res.status}`);
+    }
+
+    // Update results dari response Worker
+    if (data.results && Array.isArray(data.results)) {
+      results = [];
+      data.results.forEach(r => {
+        results.push({
+          category: r.category,
+          title:    r.title  || '',
+          slug:     r.slug   || '',
+          content:  r.content || '',
+          status:   r.status,
+          error:    r.error  || '',
+        });
+      });
+
+      data.results.forEach(r => {
+        if (r.status === 'success') {
+          log(`✅ [${r.category}] "${r.title}" → /${r.slug}`, 'ok');
+        } else {
+          log(`❌ [${r.category}] Gagal: ${r.error || 'unknown'}`, 'err');
+        }
+      });
+    } else {
+      // fallback: tandai semua success
+      results.forEach(r => { r.status = 'success'; });
+    }
+
+    setProgressBar(100);
+    setProgress(`${data.success || '?'} / ${data.total || results.length} artikel berhasil`);
+    setStatus(`Selesai! ${data.success} berhasil, ${data.failed} gagal.`, data.failed > 0 ? 'err' : 'done');
+    log(`🏁 ${data.message}`, data.failed > 0 ? 'warn' : 'ok');
+
+  } catch (err) {
+    results.forEach(r => { if (r.status === 'generating') r.status = 'failed'; r.error = err.message; });
+    setStatus('Error! Lihat log.', 'err');
+    log(`❌ ${err.message}`, 'err');
+    setProgress('Gagal');
+  }
+
+  render();
+  running = false;
+  document.getElementById('btnGen').disabled = false;
+}
+
+// ── CLEAR ──────────────────────────────────────────────────────
+function clearAll() {
+  if (running) return;
+  results = [];
+  document.getElementById('logEl').innerHTML = `<div class="log-entry"><span class="log-t">--:--:--</span><span class="log-m info">Reset. Siap generate ulang.</span></div>`;
+  setProgressBar(0); setProgress('Menunggu...');
+  setStatus('Menunggu perintah...', 'idle');
+  render();
+}
+
+// ── PREVIEW ────────────────────────────────────────────────────
+function preview(i) {
+  const r = results[i];
+  document.getElementById('modalTitleEl').textContent = r.title;
+  document.getElementById('modalBodyEl').innerHTML    = r.content || '<p style="color:var(--text2)">Konten tidak tersedia untuk preview (generate dilakukan di Worker).</p>';
+  document.getElementById('modalEl').classList.add('open');
+}
+function closeModal() { document.getElementById('modalEl').classList.remove('open'); }
+document.getElementById('modalEl').addEventListener('click', e => { if (e.target === document.getElementById('modalEl')) closeModal(); });
+
+// ── INIT ───────────────────────────────────────────────────────
+loadConfig();
+</script>
+</body>
+</html>
