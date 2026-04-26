@@ -7,7 +7,6 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=Lora:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
@@ -21,7 +20,7 @@
         <span class="logo-icon">✦</span>
         <span class="logo-text">Yuk Cari Tau</span>
       </a>
-      <nav class="main-nav">
+      <nav class="main-nav" aria-label="Navigasi Utama">
         <ul>
           <li><a href="/">Beranda</a></li>
           <li><a href="#">Teknologi</a></li>
@@ -54,7 +53,6 @@
       </div>
 
       <img id="coverImg" src="" alt="" class="featured-img" loading="eager">
-
       <div class="article-body" id="articleBody"></div>
 
       <div class="share-bar">
@@ -77,9 +75,12 @@
     <aside class="sidebar">
       <div class="sidebar-widget">
         <h3>Artikel Terkait</h3>
-        <ul id="relatedList"><li class="skeleton-line"></li><li class="skeleton-line"></li><li class="skeleton-line"></li></ul>
+        <ul id="relatedList">
+          <li class="skeleton-line"></li>
+          <li class="skeleton-line" style="margin-top:.5rem"></li>
+          <li class="skeleton-line" style="margin-top:.5rem"></li>
+        </ul>
       </div>
-
       <div class="ad-slot ad-sidebar sticky" aria-label="Iklan">
         <span class="ad-label">Iklan</span>
       </div>
@@ -98,6 +99,10 @@
         <span class="logo-text">Yuk Cari Tau</span>
       </div>
       <p class="footer-copy">&copy; 2026 Yuk Cari Tau. Hak cipta dilindungi.</p>
+      <nav aria-label="Footer">
+        <a href="#">Kebijakan Privasi</a>
+        <a href="#">Kontak</a>
+      </nav>
     </div>
   </footer>
 
