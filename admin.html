@@ -1,0 +1,2206 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Admin — Yuk Cari Tau</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=Lora:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+<style>
+/* ── RESET & VARIABLES ── */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+:root {
+  --bg:        #0b0b0e;
+  --surface:   #111116;
+  --surface2:  #18181f;
+  --surface3:  #1f1f28;
+  --border:    #2c2c3a;
+  --border2:   #3a3a4e;
+  --accent:    #7c5cfc;
+  --accent-h:  #9b7eff;
+  --green:     #22c55e;
+  --red:       #ef4444;
+  --yellow:    #f59e0b;
+  --cyan:      #06b6d4;
+  --text:      #ededf5;
+  --text2:     #7f7f9a;
+  --text3:     #555570;
+  --font-ui:   'Syne', sans-serif;
+  --font-body: 'Lora', serif;
+  --radius:    12px;
+  --sidebar-w: 220px;
+}
+
+html { height: 100%; }
+body {
+  font-family: var(--font-ui);
+  background: var(--bg);
+  color: var(--text);
+  height: 100%;
+  display: flex;
+  overflow: hidden;
+}
+
+/* ── SCROLLBAR ── */
+::-webkit-scrollbar { width: 5px; height: 5px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: var(--border2); border-radius: 10px; }
+
+/* ══════════════════════════════════════
+   SIDEBAR
+══════════════════════════════════════ */
+.sidebar {
+  width: var(--sidebar-w);
+  flex-shrink: 0;
+  background: var(--surface);
+  border-right: 1px solid var(--border);
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  position: fixed;
+  left: 0; top: 0;
+  z-index: 50;
+  transition: transform .3s;
+}
+
+.sidebar-logo {
+  padding: 1.4rem 1.2rem 1rem;
+  border-bottom: 1px solid var(--border);
+}
+.sidebar-logo .mark {
+  font-size: 1.3rem;
+  font-weight: 800;
+  letter-spacing: -.04em;
+  display: flex;
+  align-items: center;
+  gap: .45rem;
+}
+.sidebar-logo .mark span { color: var(--accent); }
+.sidebar-logo .sub {
+  font-size: .68rem;
+  color: var(--text2);
+  margin-top: .2rem;
+  letter-spacing: .05em;
+  text-transform: uppercase;
+}
+
+.sidebar-nav {
+  flex: 1;
+  padding: .75rem .6rem;
+  display: flex;
+  flex-direction: column;
+  gap: .2rem;
+  overflow-y: auto;
+}
+
+.nav-label {
+  font-size: .62rem;
+  font-weight: 700;
+  color: var(--text3);
+  text-transform: uppercase;
+  letter-spacing: .12em;
+  padding: .5rem .6rem .3rem;
+}
+
+.nav-item {
+  display: flex;
+  align-items: center;
+  gap: .6rem;
+  padding: .6rem .75rem;
+  border-radius: 9px;
+  font-size: .82rem;
+  font-weight: 600;
+  color: var(--text2);
+  cursor: pointer;
+  transition: all .15s;
+  border: none;
+  background: none;
+  width: 100%;
+  text-align: left;
+}
+.nav-item:hover { background: var(--surface2); color: var(--text); }
+.nav-item.active { background: rgba(124,92,252,.15); color: var(--accent-h); }
+.nav-item .nav-icon { font-size: 1rem; flex-shrink: 0; }
+.nav-badge {
+  margin-left: auto;
+  background: var(--accent);
+  color: #fff;
+  font-size: .6rem;
+  font-weight: 700;
+  padding: .15rem .45rem;
+  border-radius: 100px;
+  min-width: 18px;
+  text-align: center;
+}
+
+.sidebar-footer {
+  padding: .85rem 1rem;
+  border-top: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  gap: .6rem;
+}
+.sidebar-footer .avatar {
+  width: 32px; height: 32px;
+  background: linear-gradient(135deg, var(--accent), var(--cyan));
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: .85rem;
+  font-weight: 800;
+  color: #fff;
+  flex-shrink: 0;
+}
+.sidebar-footer .name { font-size: .8rem; font-weight: 600; }
+.sidebar-footer .role { font-size: .68rem; color: var(--text2); }
+
+/* ══════════════════════════════════════
+   MAIN AREA
+══════════════════════════════════════ */
+.main {
+  margin-left: var(--sidebar-w);
+  flex: 1;
+  height: 100vh;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+}
+
+/* ── TOPBAR ── */
+.topbar {
+  position: sticky; top: 0; z-index: 40;
+  background: rgba(11,11,14,.85);
+  backdrop-filter: blur(12px);
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  padding: 0 2rem;
+  height: 56px;
+  gap: 1rem;
+  flex-shrink: 0;
+}
+.topbar-title { font-size: 1rem; font-weight: 700; flex: 1; }
+.topbar-actions { display: flex; align-items: center; gap: .6rem; }
+
+/* ── BUTTONS ── */
+.btn {
+  font-family: var(--font-ui);
+  font-weight: 700;
+  font-size: .82rem;
+  padding: .55rem 1.1rem;
+  border-radius: 9px;
+  border: none;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: .4rem;
+  transition: all .15s;
+  white-space: nowrap;
+}
+.btn-primary {
+  background: var(--accent);
+  color: #fff;
+}
+.btn-primary:hover { background: var(--accent-h); transform: translateY(-1px); }
+.btn-ghost {
+  background: transparent;
+  border: 1px solid var(--border2);
+  color: var(--text2);
+}
+.btn-ghost:hover { border-color: var(--accent); color: var(--accent); }
+.btn-danger {
+  background: rgba(239,68,68,.1);
+  border: 1px solid rgba(239,68,68,.25);
+  color: var(--red);
+}
+.btn-danger:hover { background: rgba(239,68,68,.2); }
+.btn-success {
+  background: rgba(34,197,94,.1);
+  border: 1px solid rgba(34,197,94,.25);
+  color: var(--green);
+}
+.btn-success:hover { background: rgba(34,197,94,.2); }
+.btn-sm { padding: .35rem .75rem; font-size: .75rem; border-radius: 7px; }
+
+/* ── CONTENT ── */
+.content { padding: 1.75rem 2rem 3rem; flex: 1; }
+
+/* ══════════════════════════════════════
+   VIEWS
+══════════════════════════════════════ */
+.view { display: none; }
+.view.active { display: block; }
+
+/* ── STATS ROW ── */
+.stats-row {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 1rem;
+  margin-bottom: 1.75rem;
+}
+.stat-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 1.1rem 1.25rem;
+}
+.stat-card .s-label { font-size: .72rem; color: var(--text2); font-weight: 700; text-transform: uppercase; letter-spacing: .08em; margin-bottom: .5rem; }
+.stat-card .s-val   { font-size: 1.8rem; font-weight: 800; letter-spacing: -.04em; line-height: 1; }
+.stat-card .s-sub   { font-size: .72rem; color: var(--text2); margin-top: .35rem; }
+.stat-card.c-accent { border-left: 3px solid var(--accent); }
+.stat-card.c-green  { border-left: 3px solid var(--green); }
+.stat-card.c-yellow { border-left: 3px solid var(--yellow); }
+.stat-card.c-cyan   { border-left: 3px solid var(--cyan); }
+
+/* ── TABLE ── */
+.table-wrap {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  overflow: hidden;
+}
+.table-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1rem 1.25rem;
+  border-bottom: 1px solid var(--border);
+  gap: .75rem;
+  flex-wrap: wrap;
+}
+.table-head h2 { font-size: .95rem; font-weight: 700; }
+.search-box {
+  display: flex;
+  align-items: center;
+  gap: .5rem;
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: .45rem .8rem;
+  flex: 1;
+  max-width: 280px;
+}
+.search-box input {
+  background: none;
+  border: none;
+  outline: none;
+  font-family: var(--font-ui);
+  font-size: .82rem;
+  color: var(--text);
+  width: 100%;
+}
+.search-box input::placeholder { color: var(--text3); }
+
+/* Category filter */
+.cat-filter {
+  display: flex;
+  gap: .4rem;
+  padding: .75rem 1.25rem;
+  border-bottom: 1px solid var(--border);
+  overflow-x: auto;
+}
+.cat-btn {
+  font-family: var(--font-ui);
+  font-size: .72rem;
+  font-weight: 700;
+  padding: .3rem .75rem;
+  border-radius: 100px;
+  border: 1px solid var(--border);
+  background: transparent;
+  color: var(--text2);
+  cursor: pointer;
+  white-space: nowrap;
+  transition: all .15s;
+}
+.cat-btn:hover { border-color: var(--border2); color: var(--text); }
+.cat-btn.active { background: var(--accent); border-color: var(--accent); color: #fff; }
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: .83rem;
+}
+thead th {
+  text-align: left;
+  padding: .65rem 1.25rem;
+  font-size: .7rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: .09em;
+  color: var(--text2);
+  border-bottom: 1px solid var(--border);
+  white-space: nowrap;
+}
+tbody tr {
+  border-bottom: 1px solid var(--border);
+  transition: background .12s;
+}
+tbody tr:last-child { border-bottom: none; }
+tbody tr:hover { background: var(--surface2); }
+tbody td { padding: .85rem 1.25rem; vertical-align: middle; }
+.td-title { font-weight: 600; line-height: 1.3; max-width: 300px; }
+.td-title small { display: block; font-family: monospace; font-size: .72rem; color: var(--text2); font-weight: 400; margin-top: .2rem; }
+.td-actions { display: flex; gap: .4rem; justify-content: flex-end; }
+
+.badge {
+  display: inline-flex;
+  align-items: center;
+  font-size: .68rem;
+  font-weight: 700;
+  padding: .2rem .6rem;
+  border-radius: 6px;
+  text-transform: uppercase;
+  letter-spacing: .05em;
+}
+.badge-ilmu      { background: rgba(124,92,252,.15); color: #a78bfa; }
+.badge-teknologi { background: rgba(6,182,212,.15);  color: #22d3ee; }
+.badge-gayahidup { background: rgba(245,158,11,.15); color: #fbbf24; }
+.badge-kesehatan { background: rgba(239,68,68,.15);  color: #f87171; }
+
+.cover-thumb {
+  width: 48px; height: 36px;
+  border-radius: 6px;
+  object-fit: cover;
+  background: var(--surface3);
+  border: 1px solid var(--border);
+  flex-shrink: 0;
+}
+.no-cover {
+  width: 48px; height: 36px;
+  border-radius: 6px;
+  background: var(--surface3);
+  border: 1px solid var(--border);
+  display: flex; align-items: center; justify-content: center;
+  font-size: .8rem; color: var(--text3);
+}
+
+/* Empty */
+.table-empty {
+  text-align: center;
+  padding: 3.5rem 1rem;
+  color: var(--text2);
+  font-size: .9rem;
+}
+.table-empty .icon { font-size: 2.5rem; margin-bottom: .75rem; }
+
+/* Pagination */
+.pagination {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: .85rem 1.25rem;
+  border-top: 1px solid var(--border);
+  font-size: .8rem;
+  color: var(--text2);
+  gap: .5rem;
+  flex-wrap: wrap;
+}
+.page-btns { display: flex; gap: .35rem; }
+.page-btn {
+  width: 30px; height: 30px;
+  border-radius: 7px;
+  border: 1px solid var(--border);
+  background: transparent;
+  color: var(--text2);
+  font-family: var(--font-ui);
+  font-size: .8rem;
+  cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  transition: all .12s;
+}
+.page-btn:hover { border-color: var(--accent); color: var(--accent); }
+.page-btn.active { background: var(--accent); border-color: var(--accent); color: #fff; }
+.page-btn:disabled { opacity: .3; cursor: not-allowed; }
+
+/* ══════════════════════════════════════
+   FORM VIEW (tambah / edit)
+══════════════════════════════════════ */
+.form-grid {
+  display: grid;
+  grid-template-columns: 1fr 320px;
+  gap: 1.25rem;
+  align-items: start;
+}
+@media(max-width:900px) { .form-grid { grid-template-columns: 1fr; } }
+
+.form-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  overflow: hidden;
+}
+.form-card-head {
+  padding: 1rem 1.25rem;
+  border-bottom: 1px solid var(--border);
+  font-size: .85rem;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  gap: .5rem;
+}
+.form-card-body { padding: 1.25rem; }
+
+.field { margin-bottom: 1.1rem; }
+.field:last-child { margin-bottom: 0; }
+.field label { display: block; font-size: .78rem; font-weight: 700; color: var(--text2); margin-bottom: .45rem; letter-spacing: .03em; }
+.field label .req { color: var(--accent); margin-left: .2rem; }
+.field input, .field select, .field textarea {
+  width: 100%;
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: 9px;
+  color: var(--text);
+  font-family: var(--font-ui);
+  font-size: .85rem;
+  padding: .65rem .9rem;
+  outline: none;
+  transition: border-color .15s;
+}
+.field input:focus, .field select:focus, .field textarea:focus { border-color: var(--accent); }
+.field select { cursor: pointer; }
+.field textarea { resize: vertical; min-height: 120px; line-height: 1.6; }
+.field .hint { font-size: .72rem; color: var(--text3); margin-top: .35rem; }
+
+/* Rich text editor area */
+.editor-wrap {
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: 9px;
+  overflow: hidden;
+  transition: border-color .15s;
+}
+.editor-wrap:focus-within { border-color: var(--accent); }
+.editor-toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: .25rem;
+  padding: .5rem .6rem;
+  border-bottom: 1px solid var(--border);
+  background: var(--surface3);
+}
+.tool-btn {
+  width: 28px; height: 28px;
+  border-radius: 6px;
+  border: none;
+  background: transparent;
+  color: var(--text2);
+  font-family: var(--font-ui);
+  font-size: .78rem;
+  font-weight: 700;
+  cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  transition: all .12s;
+  title: attr(data-tip);
+}
+.tool-btn:hover { background: var(--border); color: var(--text); }
+.tool-btn.wide { width: auto; padding: 0 .6rem; font-size: .7rem; }
+.tool-sep { width: 1px; background: var(--border); margin: 4px 2px; align-self: stretch; }
+#editorContent {
+  width: 100%;
+  min-height: 340px;
+  max-height: 500px;
+  overflow-y: auto;
+  padding: .9rem 1rem;
+  outline: none;
+  font-family: var(--font-body);
+  font-size: .9rem;
+  line-height: 1.8;
+  color: var(--text);
+}
+#editorContent h2 { font-size: 1.15rem; margin: 1rem 0 .4rem; }
+#editorContent h3 { font-size: 1rem; margin: .8rem 0 .3rem; }
+#editorContent p  { margin-bottom: .7rem; }
+#editorContent ul, #editorContent ol { padding-left: 1.4rem; margin-bottom: .7rem; }
+#editorContent li { margin-bottom: .3rem; }
+#editorContent strong { color: var(--text); }
+#editorContent em { opacity: .85; }
+#editorContent[data-placeholder]:empty::before {
+  content: attr(data-placeholder);
+  color: var(--text3);
+  pointer-events: none;
+}
+
+/* Cover preview */
+.cover-preview {
+  width: 100%;
+  height: 140px;
+  border-radius: 9px;
+  object-fit: cover;
+  background: var(--surface3);
+  border: 1px solid var(--border);
+  display: flex; align-items: center; justify-content: center;
+  color: var(--text3);
+  font-size: .8rem;
+  margin-bottom: .75rem;
+  overflow: hidden;
+}
+.cover-preview img { width: 100%; height: 100%; object-fit: cover; }
+
+/* Category colors in select */
+.form-actions {
+  display: flex;
+  gap: .6rem;
+  margin-top: 1rem;
+  flex-wrap: wrap;
+}
+
+/* ══════════════════════════════════════
+   MODAL (konfirmasi hapus)
+══════════════════════════════════════ */
+.overlay {
+  position: fixed; inset: 0;
+  background: rgba(0,0,0,.75);
+  backdrop-filter: blur(6px);
+  z-index: 100;
+  display: flex; align-items: center; justify-content: center;
+  padding: 1rem;
+  opacity: 0; pointer-events: none;
+  transition: opacity .2s;
+}
+.overlay.open { opacity: 1; pointer-events: all; }
+.modal {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  width: 100%; max-width: 420px;
+  padding: 2rem;
+  transform: translateY(16px);
+  transition: transform .2s;
+  text-align: center;
+}
+.overlay.open .modal { transform: translateY(0); }
+.modal-icon { font-size: 2.5rem; margin-bottom: .75rem; }
+.modal h3 { font-size: 1.05rem; font-weight: 800; margin-bottom: .5rem; }
+.modal p  { font-size: .85rem; color: var(--text2); line-height: 1.6; margin-bottom: 1.5rem; }
+.modal-actions { display: flex; gap: .6rem; justify-content: center; }
+
+/* ══════════════════════════════════════
+   TOAST
+══════════════════════════════════════ */
+.toast-stack {
+  position: fixed;
+  bottom: 1.5rem; right: 1.5rem;
+  z-index: 200;
+  display: flex; flex-direction: column; gap: .5rem;
+}
+.toast {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: .75rem 1rem;
+  font-size: .82rem;
+  font-weight: 600;
+  display: flex; align-items: center; gap: .6rem;
+  box-shadow: 0 8px 30px rgba(0,0,0,.4);
+  animation: toastIn .25s ease forwards;
+  min-width: 240px;
+  max-width: 340px;
+}
+.toast.ok   { border-left: 3px solid var(--green); }
+.toast.err  { border-left: 3px solid var(--red); }
+.toast.warn { border-left: 3px solid var(--yellow); }
+@keyframes toastIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* ══════════════════════════════════════
+   LOADING
+══════════════════════════════════════ */
+.spinner {
+  width: 16px; height: 16px;
+  border: 2px solid rgba(255,255,255,.2);
+  border-top-color: #fff;
+  border-radius: 50%;
+  animation: spin .7s linear infinite;
+  flex-shrink: 0;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+.loading-row td {
+  padding: 3rem;
+  text-align: center;
+  color: var(--text2);
+}
+
+/* LOGIN SCREEN */
+.login-wrap {
+  position: fixed; inset: 0;
+  background: var(--bg);
+  display: flex; align-items: center; justify-content: center;
+  z-index: 300;
+}
+.login-box {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  padding: 2.5rem 2rem;
+  width: 100%; max-width: 360px;
+  text-align: center;
+}
+.login-box .logo { font-size: 1.6rem; font-weight: 800; margin-bottom: .25rem; }
+.login-box .logo span { color: var(--accent); }
+.login-box .sub { font-size: .8rem; color: var(--text2); margin-bottom: 2rem; }
+.login-box .field { text-align: left; }
+.login-err { font-size: .8rem; color: var(--red); margin-top: .75rem; min-height: 1.2em; }
+
+/* MOBILE */
+.mobile-menu-btn {
+  display: none;
+  background: none;
+  border: none;
+  color: var(--text);
+  font-size: 1.2rem;
+  cursor: pointer;
+  padding: .25rem;
+}
+@media(max-width:768px) {
+  .sidebar { transform: translateX(-100%); }
+  .sidebar.open { transform: translateX(0); }
+  .main { margin-left: 0; }
+  .mobile-menu-btn { display: flex; }
+  .stats-row { grid-template-columns: repeat(2,1fr); }
+  .content { padding: 1.25rem 1rem 3rem; }
+  .topbar { padding: 0 1rem; }
+}
+
+/* ══════════════════════════════════════
+   AI AGENT STYLES
+══════════════════════════════════════ */
+.agent-grid {
+  display: grid;
+  grid-template-columns: 1fr 340px;
+  gap: 1.25rem;
+  align-items: start;
+}
+@media(max-width:960px) { .agent-grid { grid-template-columns: 1fr; } }
+
+/* Prompt panel */
+.agent-prompt-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  overflow: hidden;
+}
+.agent-prompt-head {
+  padding: 1rem 1.25rem;
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: .75rem;
+}
+.agent-prompt-head h2 { font-size: .9rem; font-weight: 700; }
+.agent-prompt-body { padding: 1.25rem; }
+
+.agent-mode-tabs {
+  display: flex;
+  gap: .35rem;
+  margin-bottom: 1.1rem;
+  background: var(--surface2);
+  padding: .3rem;
+  border-radius: 10px;
+}
+.mode-tab {
+  flex: 1;
+  font-family: var(--font-ui);
+  font-size: .78rem;
+  font-weight: 700;
+  padding: .5rem;
+  border-radius: 8px;
+  border: none;
+  background: transparent;
+  color: var(--text2);
+  cursor: pointer;
+  transition: all .15s;
+  text-align: center;
+}
+.mode-tab.active {
+  background: var(--accent);
+  color: #fff;
+}
+
+/* Result preview */
+.agent-result {
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  overflow: hidden;
+  margin-top: 1rem;
+}
+.agent-result-head {
+  padding: .65rem 1rem;
+  border-bottom: 1px solid var(--border);
+  font-size: .78rem;
+  font-weight: 700;
+  color: var(--text2);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.agent-result-body {
+  padding: 1rem;
+  max-height: 320px;
+  overflow-y: auto;
+  font-family: var(--font-body);
+  font-size: .87rem;
+  line-height: 1.8;
+  color: var(--text);
+}
+.agent-result-body h2 { font-size: 1.05rem; margin: .9rem 0 .4rem; color: var(--text); }
+.agent-result-body h3 { font-size: .95rem; margin: .75rem 0 .3rem; color: var(--text); }
+.agent-result-body p  { margin-bottom: .7rem; color: #ccc; }
+.agent-result-body ul, .agent-result-body ol { padding-left: 1.3rem; margin-bottom: .7rem; color: #ccc; }
+.agent-result-body li { margin-bottom: .3rem; }
+.agent-result-body strong { color: var(--text); }
+.agent-result-empty {
+  padding: 2.5rem 1rem;
+  text-align: center;
+  color: var(--text3);
+  font-size: .85rem;
+  font-family: var(--font-ui);
+}
+.agent-result-empty .ei { font-size: 2rem; margin-bottom: .5rem; }
+
+/* Batch queue */
+.queue-list {
+  display: flex;
+  flex-direction: column;
+  gap: .5rem;
+}
+.queue-item {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 9px;
+  padding: .75rem 1rem;
+  display: flex;
+  align-items: center;
+  gap: .75rem;
+  transition: border-color .15s;
+}
+.queue-item.qi-waiting  { opacity: .5; }
+.queue-item.qi-running  { border-color: var(--accent); }
+.queue-item.qi-done     { border-color: var(--green); }
+.queue-item.qi-error    { border-color: var(--red); }
+.qi-cat {
+  font-size: .68rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: .06em;
+  padding: .2rem .55rem;
+  border-radius: 5px;
+  flex-shrink: 0;
+}
+.qi-info { flex: 1; min-width: 0; }
+.qi-title { font-size: .82rem; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.qi-sub   { font-size: .72rem; color: var(--text2); margin-top: .1rem; }
+.qi-ico   { font-size: 1rem; flex-shrink: 0; }
+.qi-btn   {
+  font-family: var(--font-ui);
+  font-size: .72rem;
+  font-weight: 700;
+  padding: .3rem .7rem;
+  border-radius: 6px;
+  border: 1px solid var(--border);
+  background: transparent;
+  color: var(--text2);
+  cursor: pointer;
+  white-space: nowrap;
+  transition: all .12s;
+  flex-shrink: 0;
+}
+.qi-btn:hover { border-color: var(--accent); color: var(--accent); }
+.qi-btn.use {
+  border-color: var(--green);
+  color: var(--green);
+}
+.qi-btn.use:hover { background: rgba(34,197,94,.1); }
+
+/* Right panel */
+.agent-right { display: flex; flex-direction: column; gap: 1rem; }
+.agent-config-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  overflow: hidden;
+}
+.agent-config-head {
+  padding: .85rem 1.1rem;
+  border-bottom: 1px solid var(--border);
+  font-size: .82rem;
+  font-weight: 700;
+}
+.agent-config-body { padding: 1.1rem; }
+
+/* Log terminal */
+.agent-log {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  overflow: hidden;
+}
+.agent-log-head {
+  padding: .7rem 1rem;
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  gap: .6rem;
+  background: var(--surface2);
+}
+.agent-log-head span { font-size: .8rem; font-weight: 700; flex: 1; }
+.log-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--text3); }
+.log-dot.active { background: var(--accent2, #00d4aa); animation: logpulse 1.5s infinite; }
+.log-dot.done   { background: var(--green); animation: none; }
+.log-dot.err    { background: var(--red); animation: none; }
+@keyframes logpulse { 0%,100%{opacity:1} 50%{opacity:.4} }
+.agent-log-body {
+  height: 200px;
+  overflow-y: auto;
+  padding: .75rem 1rem;
+  font-family: 'Courier New', monospace;
+  font-size: .75rem;
+  line-height: 1.75;
+}
+.log-line { display: flex; gap: .6rem; }
+.log-ts  { color: var(--text3); flex-shrink: 0; }
+.log-ok  { color: #00d4aa; }
+.log-inf { color: var(--text2); }
+.log-wrn { color: var(--yellow); }
+.log-err { color: var(--red); }
+
+/* Progress bar inside log */
+.agent-prog {
+  padding: 0 1rem .75rem;
+}
+.agent-prog-track {
+  height: 3px;
+  background: var(--surface2);
+  border-radius: 100px;
+  overflow: hidden;
+}
+.agent-prog-fill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--accent), #00d4aa);
+  border-radius: 100px;
+  width: 0%;
+  transition: width .4s ease;
+}
+.agent-prog-txt { font-size: .72rem; color: var(--text3); margin-top: .35rem; }
+</style>
+</head>
+<body>
+
+<!-- ══════════════════════════════════════
+     LOGIN SCREEN
+══════════════════════════════════════ -->
+<div class="login-wrap" id="loginScreen">
+  <div class="login-box">
+    <div class="logo">✦ Yuk Cari <span>Tau</span></div>
+    <div class="sub">Admin Panel — Masuk untuk melanjutkan</div>
+    <div class="field">
+      <label>Supabase URL</label>
+      <input type="text" id="loginUrl" placeholder="https://xxxx.supabase.co" autocomplete="off">
+    </div>
+    <div class="field" style="margin-top:.85rem">
+      <label>Service Role Key</label>
+      <input type="password" id="loginKey" placeholder="eyJhbGciOi...">
+    </div>
+    <div class="login-err" id="loginErr"></div>
+    <button class="btn btn-primary" style="width:100%;margin-top:.25rem;justify-content:center" onclick="doLogin()">
+      Masuk ke Admin Panel
+    </button>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════
+     SIDEBAR
+══════════════════════════════════════ -->
+<aside class="sidebar" id="sidebar">
+  <div class="sidebar-logo">
+    <div class="mark">✦ Yuk Cari <span>Tau</span></div>
+    <div class="sub">Admin Panel</div>
+  </div>
+
+  <nav class="sidebar-nav">
+    <div class="nav-label">Menu</div>
+    <button class="nav-item active" onclick="showView('dashboard', this)">
+      <span class="nav-icon">◈</span> Dashboard
+    </button>
+    <button class="nav-item" onclick="showView('articles', this)">
+      <span class="nav-icon">◎</span> Kelola Artikel
+      <span class="nav-badge" id="navCount">—</span>
+    </button>
+    <button class="nav-item" onclick="showView('add', this)">
+      <span class="nav-icon">✦</span> Tambah Artikel
+    </button>
+
+    <button class="nav-item" onclick="showView('agent', this)" id="navAgent">
+      <span class="nav-icon">🤖</span> AI Agent
+      <span class="nav-badge" style="background:linear-gradient(135deg,var(--accent),#00d4aa)">NEW</span>
+    </button>
+
+    <div class="nav-label" style="margin-top:.5rem">Kategori</div>
+    <button class="nav-item" onclick="filterAndGo('Ilmu')">
+      <span class="nav-icon">🔬</span> Ilmu
+    </button>
+    <button class="nav-item" onclick="filterAndGo('Teknologi')">
+      <span class="nav-icon">💻</span> Teknologi
+    </button>
+    <button class="nav-item" onclick="filterAndGo('Gaya Hidup')">
+      <span class="nav-icon">🌿</span> Gaya Hidup
+    </button>
+    <button class="nav-item" onclick="filterAndGo('Kesehatan')">
+      <span class="nav-icon">❤️</span> Kesehatan
+    </button>
+  </nav>
+
+  <div class="sidebar-footer">
+    <div class="avatar">A</div>
+    <div>
+      <div class="name">Admin</div>
+      <div class="role">yukcaritau.my.id</div>
+    </div>
+    <button class="btn btn-ghost btn-sm" style="margin-left:auto;padding:.3rem .5rem" onclick="doLogout()" title="Keluar">⏻</button>
+  </div>
+</aside>
+
+<!-- ══════════════════════════════════════
+     MAIN
+══════════════════════════════════════ -->
+<div class="main">
+
+  <!-- TOPBAR -->
+  <header class="topbar">
+    <button class="mobile-menu-btn" onclick="document.getElementById('sidebar').classList.toggle('open')">☰</button>
+    <div class="topbar-title" id="topbarTitle">Dashboard</div>
+    <div class="topbar-actions">
+      <button class="btn btn-ghost btn-sm" onclick="refreshData()">↺ Refresh</button>
+      <button class="btn btn-primary btn-sm" onclick="showView('add', null)">+ Artikel Baru</button>
+    </div>
+  </header>
+
+  <div class="content">
+
+    <!-- ════════════════
+         DASHBOARD VIEW
+    ════════════════ -->
+    <div class="view active" id="view-dashboard">
+      <div class="stats-row" id="statsRow">
+        <div class="stat-card c-accent">
+          <div class="s-label">Total Artikel</div>
+          <div class="s-val" id="statTotal">—</div>
+          <div class="s-sub">Semua kategori</div>
+        </div>
+        <div class="stat-card c-cyan">
+          <div class="s-label">Ilmu</div>
+          <div class="s-val" id="statIlmu">—</div>
+          <div class="s-sub">artikel</div>
+        </div>
+        <div class="stat-card c-yellow">
+          <div class="s-label">Teknologi</div>
+          <div class="s-val" id="statTek">—</div>
+          <div class="s-sub">artikel</div>
+        </div>
+        <div class="stat-card c-green">
+          <div class="s-label">Kesehatan + Gaya Hidup</div>
+          <div class="s-val" id="statOther">—</div>
+          <div class="s-sub">artikel</div>
+        </div>
+      </div>
+
+      <!-- Recent articles table -->
+      <div class="table-wrap">
+        <div class="table-head">
+          <h2>Artikel Terbaru</h2>
+          <button class="btn btn-ghost btn-sm" onclick="showView('articles', null)">Lihat Semua →</button>
+        </div>
+        <table>
+          <thead><tr>
+            <th>Cover</th><th>Judul</th><th>Kategori</th><th>Aksi</th>
+          </tr></thead>
+          <tbody id="recentBody">
+            <tr class="loading-row"><td colspan="4"><div style="display:flex;align-items:center;justify-content:center;gap:.5rem"><div class="spinner" style="border-top-color:var(--accent)"></div> Memuat...</div></td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- ════════════════
+         ARTICLES VIEW
+    ════════════════ -->
+    <div class="view" id="view-articles">
+      <div class="table-wrap">
+        <div class="table-head">
+          <h2>Kelola Artikel</h2>
+          <div class="search-box">
+            <span style="color:var(--text3)">⌕</span>
+            <input type="text" id="searchInput" placeholder="Cari judul atau slug..." oninput="onSearch()">
+          </div>
+        </div>
+        <div class="cat-filter" id="catFilter">
+          <button class="cat-btn active" onclick="setCat('', this)">Semua</button>
+          <button class="cat-btn" onclick="setCat('Ilmu', this)">🔬 Ilmu</button>
+          <button class="cat-btn" onclick="setCat('Teknologi', this)">💻 Teknologi</button>
+          <button class="cat-btn" onclick="setCat('Gaya Hidup', this)">🌿 Gaya Hidup</button>
+          <button class="cat-btn" onclick="setCat('Kesehatan', this)">❤️ Kesehatan</button>
+        </div>
+        <table>
+          <thead><tr>
+            <th>Cover</th>
+            <th>Judul & Slug</th>
+            <th>Kategori</th>
+            <th style="text-align:right">Aksi</th>
+          </tr></thead>
+          <tbody id="articlesBody">
+            <tr class="loading-row"><td colspan="4"><div style="display:flex;align-items:center;justify-content:center;gap:.5rem"><div class="spinner" style="border-top-color:var(--accent)"></div> Memuat...</div></td></tr>
+          </tbody>
+        </table>
+        <div class="pagination" id="pagination">
+          <span id="pageInfo" style="color:var(--text2);font-size:.8rem"></span>
+          <div class="page-btns" id="pageBtns"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ════════════════
+         ADD / EDIT VIEW
+    ════════════════ -->
+    <div class="view" id="view-add">
+      <div class="form-grid">
+        <!-- LEFT: Main content -->
+        <div>
+          <div class="form-card" style="margin-bottom:1.25rem">
+            <div class="form-card-head">📝 Konten Artikel</div>
+            <div class="form-card-body">
+              <div class="field">
+                <label>Judul <span class="req">*</span></label>
+                <input type="text" id="fTitle" placeholder="Masukkan judul artikel..." oninput="autoSlug()">
+              </div>
+              <div class="field">
+                <label>Isi Artikel <span class="req">*</span></label>
+                <!-- Toolbar -->
+                <div class="editor-wrap">
+                  <div class="editor-toolbar">
+                    <button class="tool-btn" onclick="fmt('bold')" title="Bold"><strong>B</strong></button>
+                    <button class="tool-btn" onclick="fmt('italic')" title="Italic"><em>I</em></button>
+                    <button class="tool-btn" onclick="fmt('underline')" title="Underline"><u>U</u></button>
+                    <div class="tool-sep"></div>
+                    <button class="tool-btn wide" onclick="fmtBlock('h2')" title="Heading 2">H2</button>
+                    <button class="tool-btn wide" onclick="fmtBlock('h3')" title="Heading 3">H3</button>
+                    <button class="tool-btn wide" onclick="fmtBlock('p')" title="Paragraf">¶</button>
+                    <div class="tool-sep"></div>
+                    <button class="tool-btn" onclick="fmt('insertUnorderedList')" title="Bullet List">•≡</button>
+                    <button class="tool-btn" onclick="fmt('insertOrderedList')" title="Numbered List">1≡</button>
+                    <div class="tool-sep"></div>
+                    <button class="tool-btn" onclick="insertLink()" title="Link">🔗</button>
+                    <div class="tool-sep"></div>
+                    <button class="tool-btn wide" onclick="toggleHtml()" title="Toggle HTML">‹/›</button>
+                  </div>
+                  <div id="editorContent" contenteditable="true"
+                       data-placeholder="Tulis isi artikel di sini..."></div>
+                </div>
+                <div class="hint">Gunakan toolbar di atas untuk format teks. Klik ‹/› untuk lihat/edit HTML mentah.</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- RIGHT: Meta -->
+        <div>
+          <div class="form-card" style="margin-bottom:1rem">
+            <div class="form-card-head">⚙️ Informasi Artikel</div>
+            <div class="form-card-body">
+              <div class="field">
+                <label>Kategori <span class="req">*</span></label>
+                <select id="fCategory">
+                  <option value="">-- Pilih Kategori --</option>
+                  <option>Ilmu</option>
+                  <option>Teknologi</option>
+                  <option>Gaya Hidup</option>
+                  <option>Kesehatan</option>
+                </select>
+              </div>
+              <div class="field">
+                <label>Slug <span class="req">*</span></label>
+                <input type="text" id="fSlug" placeholder="judul-artikel-anda">
+                <div class="hint">URL artikel: yukcaritau.my.id/<strong id="slugPreview">...</strong></div>
+              </div>
+            </div>
+          </div>
+
+          <div class="form-card">
+            <div class="form-card-head">🖼 Cover Image</div>
+            <div class="form-card-body">
+              <div class="cover-preview" id="coverPreview">
+                <span>Tidak ada gambar</span>
+              </div>
+              <div class="field">
+                <label>URL Gambar Cover</label>
+                <input type="text" id="fCover" placeholder="https://..." oninput="previewCover()">
+                <div class="hint">Tempel URL gambar dari Unsplash, CDN, atau hosting lainnya.</div>
+              </div>
+              <div class="form-actions">
+                <button class="btn btn-primary" id="btnSave" onclick="saveArticle()" style="flex:1;justify-content:center">
+                  <span id="btnSaveTxt">💾 Simpan Artikel</span>
+                </button>
+                <button class="btn btn-ghost" onclick="resetForm()">Reset</button>
+              </div>
+              <div id="formErr" style="margin-top:.75rem;font-size:.8rem;color:var(--red);display:none"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ════════════════
+         AI AGENT VIEW
+    ════════════════ -->
+    <div class="view" id="view-agent">
+      <div class="agent-grid">
+
+        <!-- KIRI: Panel utama -->
+        <div>
+          <!-- Mode tabs -->
+          <div class="agent-prompt-card">
+            <div class="agent-prompt-head">
+              <h2>✦ AI Content Generator</h2>
+              <div style="display:flex;gap:.4rem">
+                <span id="agentStatusBadge" style="font-size:.7rem;font-weight:700;padding:.25rem .7rem;border-radius:100px;background:var(--surface2);border:1px solid var(--border);color:var(--text2)">Siap</span>
+              </div>
+            </div>
+            <div class="agent-prompt-body">
+
+              <div class="agent-mode-tabs">
+                <button class="mode-tab active" onclick="setMode('single',this)">✦ Satu Artikel</button>
+                <button class="mode-tab" onclick="setMode('batch',this)">⚡ Jadwal Harian (6 Artikel)</button>
+              </div>
+
+              <!-- MODE: SINGLE -->
+              <div id="modeSingle">
+                <div class="field">
+                  <label>Topik / Judul Artikel</label>
+                  <input type="text" id="agTopic" placeholder="Cth: Mengapa langit berwarna biru?" oninput="topicChanged()">
+                  <div class="hint">Kosongkan untuk biarkan AI memilih topik sendiri berdasarkan kategori.</div>
+                </div>
+                <div style="display:grid;grid-template-columns:1fr 1fr;gap:.75rem">
+                  <div class="field" style="margin-bottom:0">
+                    <label>Kategori</label>
+                    <select id="agCategory">
+                      <option value="">— Acak —</option>
+                      <option>Ilmu</option>
+                      <option>Teknologi</option>
+                      <option>Gaya Hidup</option>
+                      <option>Kesehatan</option>
+                    </select>
+                  </div>
+                  <div class="field" style="margin-bottom:0">
+                    <label>Panjang Artikel</label>
+                    <select id="agLength">
+                      <option value="600">Pendek (~600 kata)</option>
+                      <option value="800" selected>Sedang (~800 kata)</option>
+                      <option value="1200">Panjang (~1200 kata)</option>
+                    </select>
+                  </div>
+                </div>
+                <div class="field" style="margin-top:.85rem;margin-bottom:0">
+                  <label>Instruksi Tambahan <span style="font-weight:400;color:var(--text3)">(opsional)</span></label>
+                  <input type="text" id="agExtra" placeholder="Cth: Sertakan studi kasus, gunakan bahasa santai...">
+                </div>
+                <div style="display:flex;gap:.6rem;margin-top:1rem;flex-wrap:wrap;align-items:center">
+                  <button class="btn btn-primary" id="btnGenSingle" onclick="generateSingle()" style="gap:.5rem">
+                    <span id="btnGenSingleTxt">✦ Generate Artikel</span>
+                  </button>
+                  <button class="btn btn-ghost btn-sm" onclick="clearResult()">✕ Bersihkan</button>
+                  <span id="agWordCount" style="font-size:.75rem;color:var(--text3);margin-left:auto"></span>
+                </div>
+              </div>
+
+              <!-- MODE: BATCH -->
+              <div id="modeBatch" style="display:none">
+                <div style="background:rgba(124,92,252,.07);border:1px solid rgba(124,92,252,.2);border-radius:10px;padding:.9rem 1rem;margin-bottom:1rem;font-size:.82rem;line-height:1.6;color:var(--text2)">
+                  ⚡ Mode Jadwal Harian akan generate <strong style="color:var(--text)">6 artikel sekaligus</strong>:<br>
+                  🔬 Ilmu (3) &nbsp;·&nbsp; 💻 Teknologi (1) &nbsp;·&nbsp; 🌿 Gaya Hidup (1) &nbsp;·&nbsp; ❤️ Kesehatan (1)
+                </div>
+                <div class="field">
+                  <label>Panjang Tiap Artikel</label>
+                  <select id="agBatchLength">
+                    <option value="600">Pendek (~600 kata)</option>
+                    <option value="800" selected>Sedang (~800 kata)</option>
+                    <option value="1000">Panjang (~1000 kata)</option>
+                  </select>
+                </div>
+                <div class="field" style="margin-bottom:0">
+                  <label>Instruksi Tambahan <span style="font-weight:400;color:var(--text3)">(berlaku ke semua)</span></label>
+                  <input type="text" id="agBatchExtra" placeholder="Cth: Gunakan bahasa yang mudah dipahami remaja...">
+                </div>
+                <button class="btn btn-primary" id="btnGenBatch" onclick="generateBatch()" style="margin-top:1rem;width:100%;justify-content:center">
+                  <span id="btnGenBatchTxt">⚡ Generate & Simpan 6 Artikel</span>
+                </button>
+              </div>
+
+            </div>
+          </div>
+
+          <!-- HASIL SINGLE -->
+          <div class="agent-result" id="agResultWrap" style="display:none">
+            <div class="agent-result-head">
+              <span id="agResultLabel">Hasil Generate</span>
+              <div style="display:flex;gap:.4rem">
+                <button class="btn btn-ghost btn-sm" onclick="copyResultHtml()" title="Copy HTML">⎘ HTML</button>
+                <button class="btn btn-success btn-sm" onclick="pasteToForm()" title="Kirim ke form editor">→ Pakai di Editor</button>
+              </div>
+            </div>
+            <div class="agent-result-body" id="agResultBody">
+              <div class="agent-result-empty"><div class="ei">📄</div>Hasil artikel muncul di sini.</div>
+            </div>
+          </div>
+
+          <!-- ANTRIAN BATCH -->
+          <div id="agBatchQueue" style="display:none;margin-top:1rem">
+            <div style="font-size:.8rem;font-weight:700;color:var(--text2);text-transform:uppercase;letter-spacing:.1em;margin-bottom:.6rem">Antrian Generate</div>
+            <div class="queue-list" id="queueList"></div>
+          </div>
+
+        </div>
+
+        <!-- KANAN: Config + Log -->
+        <div class="agent-right">
+
+          <!-- Config -->
+          <div class="agent-config-card">
+            <div class="agent-config-head">⚙️ Pengaturan Agent</div>
+            <div class="agent-config-body">
+              <div class="field">
+                <label>Auto Simpan ke Supabase</label>
+                <select id="agAutoSave">
+                  <option value="ask">Tanya dulu</option>
+                  <option value="yes">Langsung simpan</option>
+                  <option value="no">Tidak, cukup preview</option>
+                </select>
+                <div class="hint">Mode "Langsung simpan" cocok untuk Jadwal Harian.</div>
+              </div>
+              <div class="field" style="margin-bottom:0">
+                <label>Gaya Penulisan</label>
+                <select id="agStyle">
+                  <option value="informatif">Informatif & Edukatif</option>
+                  <option value="santai">Santai & Kasual</option>
+                  <option value="formal">Formal & Akademis</option>
+                  <option value="storytelling">Storytelling / Narasi</option>
+                </select>
+              </div>
+            </div>
+          </div>
+
+          <!-- Log -->
+          <div class="agent-log">
+            <div class="agent-log-head">
+              <div class="log-dot" id="logDot"></div>
+              <span id="logLabel">Agent Log</span>
+              <button onclick="clearLog()" style="font-size:.7rem;background:none;border:none;color:var(--text3);cursor:pointer;font-family:var(--font-ui)">Hapus</button>
+            </div>
+            <div class="agent-log-body" id="agentLog">
+              <div class="log-line"><span class="log-ts">--:--</span><span class="log-inf">Siap menerima perintah.</span></div>
+            </div>
+            <div class="agent-prog">
+              <div class="agent-prog-track"><div class="agent-prog-fill" id="agProgFill"></div></div>
+              <div class="agent-prog-txt" id="agProgTxt"></div>
+            </div>
+          </div>
+
+          <!-- Quick actions -->
+          <div class="agent-config-card">
+            <div class="agent-config-head">⚡ Topik Cepat</div>
+            <div class="agent-config-body" style="display:flex;flex-wrap:wrap;gap:.4rem">
+              <button class="btn btn-ghost btn-sm" onclick="quickTopic('Fakta unik tentang alam semesta','Ilmu')">🌌 Alam Semesta</button>
+              <button class="btn btn-ghost btn-sm" onclick="quickTopic('Perkembangan AI terbaru','Teknologi')">🤖 AI Terbaru</button>
+              <button class="btn btn-ghost btn-sm" onclick="quickTopic('Tips hidup sehat sehari-hari','Kesehatan')">💪 Hidup Sehat</button>
+              <button class="btn btn-ghost btn-sm" onclick="quickTopic('Cara meningkatkan produktivitas','Gaya Hidup')">🚀 Produktivitas</button>
+              <button class="btn btn-ghost btn-sm" onclick="quickTopic('Fenomena alam yang menakjubkan','Ilmu')">🌋 Fenomena Alam</button>
+              <button class="btn btn-ghost btn-sm" onclick="quickTopic('Teknologi masa depan','Teknologi')">🔮 Masa Depan</button>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </div>
+
+  </div><!-- /content -->
+</div><!-- /main -->
+
+<!-- HAPUS MODAL -->
+<div class="overlay" id="deleteOverlay">
+  <div class="modal">
+    <div class="modal-icon">🗑</div>
+    <h3>Hapus Artikel?</h3>
+    <p id="deleteMsg">Artikel ini akan dihapus permanen dan tidak bisa dikembalikan.</p>
+    <div class="modal-actions">
+      <button class="btn btn-ghost" onclick="closeDelete()">Batal</button>
+      <button class="btn btn-danger" id="btnConfirmDelete" onclick="confirmDelete()">Ya, Hapus</button>
+    </div>
+  </div>
+</div>
+
+<!-- TOAST -->
+<div class="toast-stack" id="toastStack"></div>
+
+<script>
+// ══════════════════════════════════════════
+//   STATE
+// ══════════════════════════════════════════
+let SB_URL  = '';
+let SB_KEY  = '';
+let allArticles   = [];
+let filteredArticles = [];
+let editId        = null;    // null = tambah baru, number = edit
+let deleteTarget  = null;
+let currentCat    = '';
+let currentSearch = '';
+let currentPage   = 1;
+const PAGE_SIZE   = 10;
+let htmlMode      = false;
+
+// ══════════════════════════════════════════
+//   LOGIN
+// ══════════════════════════════════════════
+function doLogin() {
+  const url = document.getElementById('loginUrl').value.trim();
+  const key = document.getElementById('loginKey').value.trim();
+  if (!url || !key) { document.getElementById('loginErr').textContent = 'Isi Supabase URL dan Service Role Key.'; return; }
+  SB_URL = url.replace(/\/$/, '');
+  SB_KEY = key;
+  localStorage.setItem('yct_admin_url', SB_URL);
+  localStorage.setItem('yct_admin_key', SB_KEY);
+  document.getElementById('loginScreen').style.display = 'none';
+  init();
+}
+
+function doLogout() {
+  localStorage.removeItem('yct_admin_url');
+  localStorage.removeItem('yct_admin_key');
+  location.reload();
+}
+
+// Auto-login
+(function() {
+  const url = localStorage.getItem('yct_admin_url');
+  const key = localStorage.getItem('yct_admin_key');
+  if (url && key) {
+    SB_URL = url; SB_KEY = key;
+    document.getElementById('loginScreen').style.display = 'none';
+    document.getElementById('loginUrl').value = url;
+    document.getElementById('loginKey').value = key;
+    init();
+  }
+})();
+
+// ══════════════════════════════════════════
+//   SUPABASE FETCH
+// ══════════════════════════════════════════
+async function sb(path, method = 'GET', body = null, extra = {}) {
+  const res = await fetch(SB_URL + path, {
+    method,
+    headers: {
+      'Content-Type':  'application/json',
+      'apikey':        SB_KEY,
+      'Authorization': 'Bearer ' + SB_KEY,
+      'Prefer':        method === 'POST' ? 'return=representation' : method === 'PATCH' ? 'return=representation' : '',
+      ...extra
+    },
+    body: body ? JSON.stringify(body) : undefined
+  });
+  return res;
+}
+
+// ══════════════════════════════════════════
+//   INIT
+// ══════════════════════════════════════════
+async function init() {
+  await loadArticles();
+  renderDashboard();
+  renderArticlesTable();
+}
+
+async function refreshData() {
+  toast('Memuat ulang data...', 'warn');
+  await loadArticles();
+  renderDashboard();
+  renderArticlesTable();
+  toast('Data diperbarui ✓', 'ok');
+}
+
+// ══════════════════════════════════════════
+//   LOAD ARTICLES
+// ══════════════════════════════════════════
+async function loadArticles() {
+  try {
+    const res  = await sb('/rest/v1/articles?select=id,title,slug,category,cover_image_url,published_at&order=id.desc&limit=500');
+    const data = await res.json();
+    if (!res.ok) throw new Error(data?.message || 'Gagal memuat');
+    allArticles = Array.isArray(data) ? data : [];
+    document.getElementById('navCount').textContent = allArticles.length;
+    applyFilter();
+  } catch (e) {
+    toast('Gagal memuat artikel: ' + e.message, 'err');
+  }
+}
+
+// ══════════════════════════════════════════
+//   FILTER & SEARCH
+// ══════════════════════════════════════════
+function applyFilter() {
+  let list = [...allArticles];
+  if (currentCat)    list = list.filter(a => a.category === currentCat);
+  if (currentSearch) {
+    const q = currentSearch.toLowerCase();
+    list = list.filter(a => a.title?.toLowerCase().includes(q) || a.slug?.toLowerCase().includes(q));
+  }
+  filteredArticles = list;
+  currentPage = 1;
+}
+
+function setCat(cat, btn) {
+  currentCat = cat;
+  document.querySelectorAll('.cat-btn').forEach(b => b.classList.remove('active'));
+  if (btn) btn.classList.add('active');
+  applyFilter();
+  renderArticlesTable();
+}
+
+function onSearch() {
+  currentSearch = document.getElementById('searchInput').value.trim();
+  applyFilter();
+  renderArticlesTable();
+}
+
+function filterAndGo(cat) {
+  currentCat = cat;
+  // update cat buttons
+  document.querySelectorAll('.cat-btn').forEach(b => {
+    b.classList.toggle('active', b.textContent.includes(cat));
+  });
+  applyFilter();
+  showView('articles', null);
+}
+
+// ══════════════════════════════════════════
+//   RENDER DASHBOARD
+// ══════════════════════════════════════════
+function renderDashboard() {
+  document.getElementById('statTotal').textContent = allArticles.length;
+  document.getElementById('statIlmu').textContent  = allArticles.filter(a => a.category === 'Ilmu').length;
+  document.getElementById('statTek').textContent   = allArticles.filter(a => a.category === 'Teknologi').length;
+  document.getElementById('statOther').textContent =
+    allArticles.filter(a => a.category === 'Kesehatan' || a.category === 'Gaya Hidup').length;
+
+  const recent = allArticles.slice(0, 8);
+  document.getElementById('recentBody').innerHTML = recent.length
+    ? recent.map(a => rowHtml(a, true)).join('')
+    : `<tr><td colspan="4"><div class="table-empty"><div class="icon">📭</div>Belum ada artikel.</div></td></tr>`;
+}
+
+// ══════════════════════════════════════════
+//   RENDER ARTICLES TABLE
+// ══════════════════════════════════════════
+function renderArticlesTable() {
+  const total  = filteredArticles.length;
+  const pages  = Math.max(1, Math.ceil(total / PAGE_SIZE));
+  if (currentPage > pages) currentPage = pages;
+  const slice  = filteredArticles.slice((currentPage-1)*PAGE_SIZE, currentPage*PAGE_SIZE);
+
+  document.getElementById('articlesBody').innerHTML = slice.length
+    ? slice.map(a => rowHtml(a, false)).join('')
+    : `<tr><td colspan="4"><div class="table-empty"><div class="icon">🔍</div>${currentSearch || currentCat ? 'Tidak ada hasil.' : 'Belum ada artikel.'}</div></td></tr>`;
+
+  // Pagination
+  document.getElementById('pageInfo').textContent =
+    total ? `${(currentPage-1)*PAGE_SIZE+1}–${Math.min(currentPage*PAGE_SIZE, total)} dari ${total}` : '0 artikel';
+
+  const btns = document.getElementById('pageBtns');
+  btns.innerHTML = '';
+  const prev = Object.assign(document.createElement('button'), { className:'page-btn', textContent:'‹' });
+  prev.disabled = currentPage <= 1;
+  prev.onclick  = () => { currentPage--; renderArticlesTable(); };
+  btns.appendChild(prev);
+
+  for (let i = 1; i <= pages; i++) {
+    if (pages > 7 && (i > 2 && i < pages-1 && Math.abs(i-currentPage) > 1)) {
+      if (i === 3 || i === pages-2) btns.insertAdjacentHTML('beforeend','<span style="color:var(--text3);padding:0 .25rem">…</span>');
+      continue;
+    }
+    const b = Object.assign(document.createElement('button'), { className:'page-btn'+(i===currentPage?' active':''), textContent:i });
+    b.onclick = () => { currentPage = i; renderArticlesTable(); };
+    btns.appendChild(b);
+  }
+
+  const next = Object.assign(document.createElement('button'), { className:'page-btn', textContent:'›' });
+  next.disabled = currentPage >= pages;
+  next.onclick  = () => { currentPage++; renderArticlesTable(); };
+  btns.appendChild(next);
+}
+
+// ══════════════════════════════════════════
+//   ROW HTML
+// ══════════════════════════════════════════
+function rowHtml(a, compact) {
+  const catKey = (a.category||'').toLowerCase().replace(' ','');
+  const cover  = a.cover_image_url
+    ? `<img class="cover-thumb" src="${a.cover_image_url}" alt="">`
+    : `<div class="no-cover">📷</div>`;
+  return `<tr>
+    <td>${cover}</td>
+    <td class="td-title">${a.title||'—'}<small>/${a.slug||''}</small></td>
+    <td><span class="badge badge-${catKey}">${a.category||'—'}</span></td>
+    <td><div class="td-actions">
+      <button class="btn btn-ghost btn-sm" onclick="openEdit(${a.id})">✏ Edit</button>
+      <button class="btn btn-danger btn-sm" onclick="openDelete(${a.id},'${(a.title||'').replace(/'/g,"\\'")}')">🗑</button>
+    </div></td>
+  </tr>`;
+}
+
+// ══════════════════════════════════════════
+//   VIEWS
+// ══════════════════════════════════════════
+const titles = { dashboard:'Dashboard', articles:'Kelola Artikel', add:'Tambah Artikel', agent:'🤖 AI Agent' };
+
+function showView(id, btn) {
+  document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+  document.getElementById('view-'+id).classList.add('active');
+  document.querySelectorAll('.nav-item').forEach(b => b.classList.remove('active'));
+  if (btn) btn.classList.add('active');
+  document.getElementById('topbarTitle').textContent = titles[id] || id;
+  document.getElementById('sidebar').classList.remove('open');
+
+  if (id === 'add' && editId === null) resetForm();
+  if (id === 'articles') renderArticlesTable();
+  if (id === 'dashboard') renderDashboard();
+}
+
+// ══════════════════════════════════════════
+//   FORM
+// ══════════════════════════════════════════
+function autoSlug() {
+  const t = document.getElementById('fTitle').value;
+  if (editId !== null) return; // jangan auto-ubah slug saat edit
+  const slug = makeSlug(t);
+  document.getElementById('fSlug').value = slug;
+  document.getElementById('slugPreview').textContent = slug || '...';
+}
+
+document.getElementById('fSlug').addEventListener('input', function() {
+  document.getElementById('slugPreview').textContent = this.value || '...';
+});
+
+function previewCover() {
+  const url = document.getElementById('fCover').value.trim();
+  const box  = document.getElementById('coverPreview');
+  if (url) {
+    box.innerHTML = `<img src="${url}" alt="cover" onerror="this.parentElement.innerHTML='<span>URL tidak valid</span>'">`;
+  } else {
+    box.innerHTML = '<span>Tidak ada gambar</span>';
+  }
+}
+
+function resetForm() {
+  editId = null;
+  document.getElementById('fTitle').value    = '';
+  document.getElementById('fSlug').value     = '';
+  document.getElementById('fCategory').value = '';
+  document.getElementById('fCover').value    = '';
+  document.getElementById('editorContent').innerHTML = '';
+  document.getElementById('slugPreview').textContent = '...';
+  document.getElementById('coverPreview').innerHTML  = '<span>Tidak ada gambar</span>';
+  document.getElementById('formErr').style.display   = 'none';
+  document.getElementById('btnSaveTxt').textContent  = '💾 Simpan Artikel';
+  document.getElementById('topbarTitle').textContent = 'Tambah Artikel';
+  htmlMode = false;
+}
+
+// ── Open Edit ──
+async function openEdit(id) {
+  editId = id;
+  showView('add', null);
+  document.getElementById('topbarTitle').textContent = 'Edit Artikel';
+  document.getElementById('btnSaveTxt').textContent  = '💾 Perbarui Artikel';
+
+  // Fetch full article (including content)
+  try {
+    const res  = await sb(`/rest/v1/articles?id=eq.${id}&select=*`);
+    const data = await res.json();
+    const a    = data[0];
+    if (!a) { toast('Artikel tidak ditemukan', 'err'); return; }
+
+    document.getElementById('fTitle').value    = a.title    || '';
+    document.getElementById('fSlug').value     = a.slug     || '';
+    document.getElementById('fCategory').value = a.category || '';
+    document.getElementById('fCover').value    = a.cover_image_url || '';
+    document.getElementById('slugPreview').textContent = a.slug || '...';
+    document.getElementById('editorContent').innerHTML = a.content || '';
+    previewCover();
+  } catch (e) {
+    toast('Gagal memuat artikel: ' + e.message, 'err');
+  }
+}
+
+// ── Save ──
+async function saveArticle() {
+  const title    = document.getElementById('fTitle').value.trim();
+  const slug     = document.getElementById('fSlug').value.trim();
+  const category = document.getElementById('fCategory').value;
+  const cover    = document.getElementById('fCover').value.trim();
+  const content  = htmlMode
+    ? document.getElementById('editorContent').textContent
+    : document.getElementById('editorContent').innerHTML;
+
+  const errEl = document.getElementById('formErr');
+  errEl.style.display = 'none';
+
+  if (!title || !slug || !category || !content.trim()) {
+    errEl.textContent = '⚠ Judul, slug, kategori, dan isi artikel wajib diisi.';
+    errEl.style.display = 'block';
+    return;
+  }
+
+  const btn = document.getElementById('btnSave');
+  btn.disabled = true;
+  btn.innerHTML = '<div class="spinner"></div> Menyimpan...';
+
+  const payload = { title, slug, category, content, cover_image_url: cover || null };
+
+  try {
+    let res;
+    if (editId !== null) {
+      // UPDATE
+      res = await sb(`/rest/v1/articles?id=eq.${editId}`, 'PATCH', payload);
+    } else {
+      // INSERT
+      res = await sb('/rest/v1/articles', 'POST', payload);
+    }
+
+    if (!res.ok) {
+      const err = await res.text();
+      if (err.includes('duplicate') || err.includes('unique')) {
+        throw new Error(`Slug "${slug}" sudah digunakan artikel lain.`);
+      }
+      throw new Error(err.substring(0, 120));
+    }
+
+    toast(editId !== null ? '✓ Artikel berhasil diperbarui!' : '✓ Artikel berhasil disimpan!', 'ok');
+    await loadArticles();
+    renderDashboard();
+
+    if (editId !== null) {
+      // Kembali ke tabel setelah edit
+      setTimeout(() => showView('articles', null), 800);
+    } else {
+      resetForm();
+    }
+  } catch (e) {
+    errEl.textContent = '✗ ' + e.message;
+    errEl.style.display = 'block';
+  } finally {
+    btn.disabled = false;
+    document.getElementById('btnSaveTxt').textContent =
+      editId !== null ? '💾 Perbarui Artikel' : '💾 Simpan Artikel';
+    btn.innerHTML = `<span id="btnSaveTxt">${editId !== null ? '💾 Perbarui Artikel' : '💾 Simpan Artikel'}</span>`;
+  }
+}
+
+// ══════════════════════════════════════════
+//   DELETE
+// ══════════════════════════════════════════
+function openDelete(id, title) {
+  deleteTarget = id;
+  document.getElementById('deleteMsg').textContent = `"${title}" akan dihapus permanen dan tidak bisa dikembalikan.`;
+  document.getElementById('deleteOverlay').classList.add('open');
+}
+
+function closeDelete() {
+  deleteTarget = null;
+  document.getElementById('deleteOverlay').classList.remove('open');
+}
+
+async function confirmDelete() {
+  if (!deleteTarget) return;
+  const btn = document.getElementById('btnConfirmDelete');
+  btn.disabled = true;
+  btn.innerHTML = '<div class="spinner" style="border-top-color:var(--red)"></div>';
+
+  try {
+    const res = await sb(`/rest/v1/articles?id=eq.${deleteTarget}`, 'DELETE');
+    if (!res.ok) throw new Error(await res.text());
+    allArticles = allArticles.filter(a => a.id !== deleteTarget);
+    applyFilter();
+    renderDashboard();
+    renderArticlesTable();
+    toast('Artikel berhasil dihapus.', 'ok');
+  } catch (e) {
+    toast('Gagal hapus: ' + e.message, 'err');
+  } finally {
+    btn.disabled = false;
+    btn.textContent = 'Ya, Hapus';
+    closeDelete();
+  }
+}
+
+// ══════════════════════════════════════════
+//   EDITOR
+// ══════════════════════════════════════════
+function fmt(cmd) {
+  document.getElementById('editorContent').focus();
+  document.execCommand(cmd, false, null);
+}
+
+function fmtBlock(tag) {
+  document.getElementById('editorContent').focus();
+  document.execCommand('formatBlock', false, tag);
+}
+
+function insertLink() {
+  const url = prompt('Masukkan URL:');
+  if (url) {
+    document.getElementById('editorContent').focus();
+    document.execCommand('createLink', false, url);
+  }
+}
+
+function toggleHtml() {
+  const ed = document.getElementById('editorContent');
+  if (!htmlMode) {
+    // WYSIWYG → Raw HTML
+    const raw = ed.innerHTML;
+    ed.contentEditable = 'false';
+    ed.style.fontFamily = 'monospace';
+    ed.style.fontSize   = '.8rem';
+    ed.style.whiteSpace = 'pre-wrap';
+    ed.textContent = raw;
+    htmlMode = true;
+  } else {
+    // Raw HTML → WYSIWYG
+    const raw = ed.textContent;
+    ed.contentEditable = 'true';
+    ed.style.fontFamily = '';
+    ed.style.fontSize   = '';
+    ed.style.whiteSpace = '';
+    ed.innerHTML = raw;
+    htmlMode = false;
+  }
+}
+
+// ══════════════════════════════════════════
+//   TOAST
+// ══════════════════════════════════════════
+function toast(msg, type = 'ok') {
+  const icons = { ok:'✓', err:'✗', warn:'⚡' };
+  const el = document.createElement('div');
+  el.className = `toast ${type}`;
+  el.innerHTML = `<span>${icons[type]||'•'}</span><span>${msg}</span>`;
+  document.getElementById('toastStack').appendChild(el);
+  setTimeout(() => el.remove(), 3500);
+}
+
+// ══════════════════════════════════════════
+//   UTILS
+// ══════════════════════════════════════════
+function makeSlug(str) {
+  return (str||'')
+    .toLowerCase()
+    .replace(/[àáâãäå]/g,'a').replace(/[èéêë]/g,'e')
+    .replace(/[ìíîï]/g,'i').replace(/[òóôõö]/g,'o')
+    .replace(/[ùúûü]/g,'u').replace(/[ñ]/g,'n')
+    .replace(/[^a-z0-9\s-]/g,'').trim()
+    .replace(/\s+/g,'-').replace(/-+/g,'-')
+    .substring(0,80);
+}
+
+
+// ══════════════════════════════════════════
+//   AI AGENT
+// ══════════════════════════════════════════
+let agentMode    = 'single';
+let agentRunning = false;
+let generatedArticle = null; // { title, slug, category, content }
+
+const BATCH_PLAN = [
+  { category:'Ilmu',       count:3, icon:'🔬', topics:['fisika kuantum','biologi laut','astronomi','ekologi','kimia organik','genetika','geologi','matematika'] },
+  { category:'Teknologi',  count:1, icon:'💻', topics:['kecerdasan buatan','keamanan siber','blockchain','komputasi awan','robotika','IoT','semiconductor'] },
+  { category:'Gaya Hidup', count:1, icon:'🌿', topics:['produktivitas','perjalanan','hobi','kuliner nusantara','minimalism','mindfulness','work-life balance'] },
+  { category:'Kesehatan',  count:1, icon:'❤️', topics:['nutrisi seimbang','olahraga','kesehatan mental','pola tidur','imunitas','kesehatan jantung','meditasi'] },
+];
+
+// ── Mode switch ──
+function setMode(mode, btn) {
+  agentMode = mode;
+  document.querySelectorAll('.mode-tab').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  document.getElementById('modeSingle').style.display = mode === 'single' ? '' : 'none';
+  document.getElementById('modeBatch').style.display  = mode === 'batch'  ? '' : 'none';
+  document.getElementById('agResultWrap').style.display  = 'none';
+  document.getElementById('agBatchQueue').style.display  = 'none';
+}
+
+// ── Quick topic ──
+function quickTopic(topic, cat) {
+  if (agentMode !== 'single') setMode('single', document.querySelector('.mode-tab'));
+  document.getElementById('agTopic').value    = topic;
+  document.getElementById('agCategory').value = cat;
+}
+
+function topicChanged() {
+  // kosong = AI pilih sendiri
+}
+
+// ── Log helpers ──
+function alog(msg, type='inf') {
+  const el  = document.getElementById('agentLog');
+  const now = new Date().toLocaleTimeString('id-ID',{hour:'2-digit',minute:'2-digit',second:'2-digit'});
+  const row = document.createElement('div');
+  row.className = 'log-line';
+  row.innerHTML = `<span class="log-ts">${now}</span><span class="log-${type}">${msg}</span>`;
+  el.appendChild(row);
+  el.scrollTop = el.scrollHeight;
+}
+
+function setLogState(state, label) {
+  const dot = document.getElementById('logDot');
+  dot.className = 'log-dot' + (state==='active'?' active':state==='done'?' done':state==='err'?' err':'');
+  document.getElementById('logLabel').textContent = label || 'Agent Log';
+}
+
+function clearLog() {
+  document.getElementById('agentLog').innerHTML =
+    `<div class="log-line"><span class="log-ts">--:--</span><span class="log-inf">Log dibersihkan.</span></div>`;
+}
+
+function setAgProg(pct, txt) {
+  document.getElementById('agProgFill').style.width = pct + '%';
+  document.getElementById('agProgTxt').textContent  = txt || '';
+}
+
+function setAgStatus(txt, color) {
+  const b = document.getElementById('agentStatusBadge');
+  b.textContent = txt;
+  b.style.background = color || 'var(--surface2)';
+  b.style.color = color ? '#fff' : 'var(--text2)';
+  b.style.borderColor = color || 'var(--border)';
+}
+
+// ── Build prompt ──
+function buildPrompt(topic, category, wordTarget, style, extra) {
+  const cats = { Ilmu:'sains/edukasi', Teknologi:'teknologi/digital', 'Gaya Hidup':'gaya hidup/lifestyle', Kesehatan:'kesehatan/wellness' };
+  const styles = {
+    informatif: 'informatif, edukatif, dan mudah dipahami',
+    santai:     'santai, kasual, dan menggunakan bahasa sehari-hari',
+    formal:     'formal, akademis, dan berbasis data/riset',
+    storytelling:'bercerita (storytelling/narasi) yang engaging dan personal',
+  };
+  const catDesc = cats[category] || 'umum';
+  const styleDesc = styles[style] || styles.informatif;
+  const topicLine = topic
+    ? `Topik yang diminta: "${topic}"`
+    : `Pilih topik ${category ? `di bidang ${catDesc}` : 'menarik'} yang sedang populer atau relevan`;
+
+  return `Kamu adalah penulis konten profesional berbahasa Indonesia untuk website edukasi "Yuk Cari Tau".
+
+${topicLine}
+Kategori: ${category || 'pilih yang paling sesuai dengan topik'}
+Target panjang: sekitar ${wordTarget} kata
+Gaya penulisan: ${styleDesc}
+${extra ? `Instruksi tambahan: ${extra}` : ''}
+
+WAJIB — Balas HANYA dengan JSON valid ini tanpa markdown, komentar, atau teks lain:
+{
+  "title": "judul artikel yang menarik, spesifik, dan SEO-friendly (max 80 karakter)",
+  "category": "${category || 'Ilmu/Teknologi/Gaya Hidup/Kesehatan'}",
+  "content": "isi artikel dalam format HTML. Gunakan HANYA tag: h2, h3, p, ul, ol, li, strong, em. JANGAN gunakan html, head, body, div, span, atau tag lain. Mulai langsung dengan paragraf pembuka."
+}
+
+Ketentuan konten:
+- Paragraf pembuka harus langsung menarik, tidak diawali dengan "Pernahkah kamu" atau kalimat basi
+- Minimal 3 subjudul h2 dengan konten substantif di bawah masing-masing
+- Sertakan fakta menarik, data, atau contoh nyata
+- Penutup dengan insight atau ajakan
+- Judul harus unik dan spesifik, bukan generik`;
+}
+
+// ── Claude API call ──
+async function callClaude(prompt) {
+  const res = await fetch('https://api.anthropic.com/v1/messages', {
+    method:'POST',
+    headers:{ 'Content-Type':'application/json' },
+    body: JSON.stringify({
+      model: 'claude-sonnet-4-20250514',
+      max_tokens: 4000,
+      system: 'Kamu penulis konten profesional. Balas HANYA dengan JSON valid. Tanpa markdown, tanpa penjelasan, tanpa teks sebelum atau sesudah JSON.',
+      messages:[{ role:'user', content:prompt }]
+    })
+  });
+  if (!res.ok) throw new Error(`API Error ${res.status}`);
+  const data = await res.json();
+  const raw  = data.content?.map(b=>b.text||'').join('') || '';
+  const clean = raw.replace(/```json|```/g,'').trim();
+  try { return JSON.parse(clean); }
+  catch { throw new Error('Gagal parse respons AI. Coba lagi.'); }
+}
+
+// ── GENERATE SINGLE ──
+async function generateSingle() {
+  if (agentRunning) return;
+
+  const topic    = document.getElementById('agTopic').value.trim();
+  const category = document.getElementById('agCategory').value;
+  const length   = document.getElementById('agLength').value;
+  const extra    = document.getElementById('agExtra').value.trim();
+  const style    = document.getElementById('agStyle').value;
+  const autoSave = document.getElementById('agAutoSave').value;
+
+  agentRunning = true;
+  generatedArticle = null;
+
+  const btn = document.getElementById('btnGenSingle');
+  btn.disabled = true;
+  document.getElementById('btnGenSingleTxt').textContent = '⏳ Generating...';
+  setAgStatus('Generating...', 'var(--accent)');
+  setLogState('active', 'Agent bekerja...');
+  setAgProg(20, 'Menghubungi Claude AI...');
+  document.getElementById('agResultWrap').style.display = 'none';
+
+  alog('Mulai generate artikel...', 'inf');
+  if (topic)    alog(`Topik: "${topic}"`, 'inf');
+  if (category) alog(`Kategori: ${category}`, 'inf');
+  alog(`Panjang target: ~${length} kata`, 'inf');
+
+  try {
+    const prompt = buildPrompt(topic, category, length, style, extra);
+    alog('Memproses dengan Claude AI...', 'inf');
+    setAgProg(50, 'AI sedang menulis...');
+
+    const result = await callClaude(prompt);
+
+    if (!result.title || !result.content) throw new Error('Respons AI tidak lengkap');
+
+    const finalCat = result.category || category || 'Ilmu';
+    const slug     = makeSlug(result.title);
+    const wordCount = result.content.replace(/<[^>]*>/g,' ').split(/\s+/).filter(Boolean).length;
+
+    generatedArticle = { title:result.title, slug, category:finalCat, content:result.content };
+
+    alog(`✓ Artikel dibuat: "${result.title}"`, 'ok');
+    alog(`Kategori: ${finalCat} | ~${wordCount} kata`, 'ok');
+    setAgProg(80, 'Memproses hasil...');
+
+    // Tampilkan preview
+    document.getElementById('agResultWrap').style.display = '';
+    document.getElementById('agResultLabel').textContent  = `"${result.title}" · ${finalCat} · ~${wordCount} kata`;
+    document.getElementById('agResultBody').innerHTML     = result.content;
+    document.getElementById('agWordCount').textContent   = `~${wordCount} kata`;
+
+    setAgProg(100, `✓ Selesai — ${wordCount} kata`);
+    setAgStatus('Selesai ✓', 'var(--green)');
+    setLogState('done', 'Selesai');
+
+    // Auto save?
+    if (autoSave === 'yes') {
+      alog('Auto-save aktif, menyimpan ke Supabase...', 'inf');
+      await doSaveToSupabase(generatedArticle);
+    } else if (autoSave === 'ask') {
+      toast('Artikel siap. Klik "→ Pakai di Editor" untuk edit & simpan, atau "⎘ HTML" untuk copy.', 'warn');
+    }
+
+  } catch(e) {
+    alog(`✗ Error: ${e.message}`, 'err');
+    setAgStatus('Error', 'var(--red)');
+    setLogState('err', 'Gagal');
+    toast(e.message, 'err');
+    setAgProg(0,'');
+  } finally {
+    agentRunning = false;
+    btn.disabled = false;
+    document.getElementById('btnGenSingleTxt').textContent = '✦ Generate Artikel';
+  }
+}
+
+// ── GENERATE BATCH ──
+async function generateBatch() {
+  if (agentRunning) return;
+
+  const length   = document.getElementById('agBatchLength').value;
+  const extra    = document.getElementById('agBatchExtra').value.trim();
+  const style    = document.getElementById('agStyle').value;
+  const autoSave = document.getElementById('agAutoSave').value;
+
+  agentRunning = true;
+
+  const btn = document.getElementById('btnGenBatch');
+  btn.disabled = true;
+  document.getElementById('btnGenBatchTxt').textContent = '⏳ Memproses...';
+  setLogState('active', 'Batch berjalan...');
+  setAgStatus('Batch running', 'var(--accent)');
+  document.getElementById('agResultWrap').style.display = 'none';
+
+  // Build queue
+  const queue = [];
+  for (const plan of BATCH_PLAN) {
+    for (let i = 0; i < plan.count; i++) {
+      const topic = plan.topics[Math.floor(Math.random()*plan.topics.length)];
+      queue.push({ category:plan.category, icon:plan.icon, topicHint:topic,
+                   status:'waiting', title:'', slug:'', content:'', error:'' });
+    }
+  }
+
+  document.getElementById('agBatchQueue').style.display = '';
+  renderQueue(queue);
+  setAgProg(0, `0 / ${queue.length} artikel`);
+  alog(`Memulai batch: ${queue.length} artikel`, 'inf');
+
+  let done = 0;
+  for (let i = 0; i < queue.length; i++) {
+    const item = queue[i];
+    item.status = 'running';
+    renderQueue(queue);
+    alog(`[${item.icon} ${item.category}] Generating... (topik: ${item.topicHint})`, 'inf');
+
+    try {
+      const prompt = buildPrompt(item.topicHint, item.category, length, style, extra);
+      const result = await callClaude(prompt);
+
+      if (!result.title || !result.content) throw new Error('Respons tidak lengkap');
+
+      item.title   = result.title;
+      item.slug    = makeSlug(result.title);
+      item.content = result.content;
+      item.status  = 'done';
+
+      alog(`✓ [${item.category}] "${result.title}"`, 'ok');
+
+      // Simpan ke Supabase jika auto
+      if (autoSave === 'yes' || autoSave === 'ask') {
+        try {
+          await doSaveToSupabase(item);
+          alog(`  → Tersimpan: /${item.slug}`, 'ok');
+        } catch(se) {
+          alog(`  ⚠ Gagal simpan: ${se.message}`, 'wrn');
+        }
+      }
+
+    } catch(e) {
+      item.status = 'error';
+      item.error  = e.message;
+      alog(`✗ [${item.category}] Gagal: ${e.message}`, 'err');
+    }
+
+    done++;
+    setAgProg(Math.round((done/queue.length)*100), `${done} / ${queue.length} artikel`);
+    renderQueue(queue);
+
+    await new Promise(r => setTimeout(r, 0)); // yield ke event loop
+    if (i < queue.length-1) await sleep(1200);
+  }
+
+  const ok   = queue.filter(q=>q.status==='done').length;
+  const fail = queue.filter(q=>q.status==='error').length;
+  alog(`Batch selesai: ${ok} berhasil, ${fail} gagal.`, ok===queue.length?'ok':'wrn');
+  setAgStatus(`${ok}/${queue.length} ✓`, ok===queue.length?'var(--green)':'var(--yellow)');
+  setLogState(fail>0?'err':'done', 'Batch selesai');
+
+  if (ok > 0) {
+    await loadArticles();
+    renderDashboard();
+    toast(`✓ ${ok} artikel berhasil dibuat${autoSave!=='no'?' & disimpan':''}!`, 'ok');
+  }
+
+  agentRunning = false;
+  btn.disabled = false;
+  document.getElementById('btnGenBatchTxt').textContent = '⚡ Generate & Simpan 6 Artikel';
+}
+
+// ── Render antrian batch ──
+function renderQueue(queue) {
+  const catClass = { Ilmu:'badge-ilmu', Teknologi:'badge-teknologi', 'Gaya Hidup':'badge-gayahidup', Kesehatan:'badge-kesehatan' };
+  const icoMap   = { waiting:'⏳', running:'⚡', done:'✅', error:'❌' };
+  document.getElementById('queueList').innerHTML = queue.map((q,i) => `
+    <div class="queue-item qi-${q.status}">
+      <span class="qi-cat badge ${catClass[q.category]||''}">${q.icon} ${q.category}</span>
+      <div class="qi-info">
+        <div class="qi-title">${q.title || (q.status==='running'?'Sedang ditulis...':q.status==='waiting'?'Menunggu...':q.error||'Gagal')}</div>
+        ${q.slug ? `<div class="qi-sub">/${q.slug}</div>` : ''}
+      </div>
+      <div class="qi-ico">${icoMap[q.status]||'⏳'}</div>
+      ${q.status==='done'&&q.content ? `<button class="qi-btn use" onclick="useQueueItem(${i})">→ Pakai</button>` : ''}
+    </div>
+  `).join('');
+
+  // store queue ref for useQueueItem
+  window._lastQueue = queue;
+}
+
+function useQueueItem(i) {
+  const item = window._lastQueue[i];
+  if (!item) return;
+  generatedArticle = item;
+  pasteToForm();
+  toast('Artikel dipindahkan ke form editor!', 'ok');
+}
+
+// ── Paste to form ──
+function pasteToForm() {
+  if (!generatedArticle) { toast('Tidak ada artikel untuk dipakai', 'err'); return; }
+  editId = null;
+  resetForm();
+  document.getElementById('fTitle').value    = generatedArticle.title;
+  document.getElementById('fSlug').value     = generatedArticle.slug;
+  document.getElementById('fCategory').value = generatedArticle.category;
+  document.getElementById('editorContent').innerHTML = generatedArticle.content;
+  document.getElementById('slugPreview').textContent = generatedArticle.slug;
+  showView('add', null);
+  toast('Artikel dimuat ke editor. Cek & simpan!', 'ok');
+}
+
+// ── Copy HTML ──
+function copyResultHtml() {
+  if (!generatedArticle) return;
+  navigator.clipboard.writeText(generatedArticle.content)
+    .then(()=>toast('HTML disalin ke clipboard ✓','ok'))
+    .catch(()=>toast('Gagal menyalin','err'));
+}
+
+// ── Clear result ──
+function clearResult() {
+  generatedArticle = null;
+  document.getElementById('agResultWrap').style.display   = 'none';
+  document.getElementById('agBatchQueue').style.display   = 'none';
+  document.getElementById('agTopic').value    = '';
+  document.getElementById('agCategory').value = '';
+  document.getElementById('agWordCount').textContent = '';
+  setAgProg(0,'');
+  setAgStatus('Siap');
+  setLogState('','Agent Log');
+}
+
+// ── Save article to Supabase ──
+async function doSaveToSupabase(article) {
+  if (!SB_URL || !SB_KEY) throw new Error('Supabase belum dikonfigurasi');
+  const payload = {
+    title:           article.title,
+    slug:            article.slug,
+    category:        article.category,
+    content:         article.content,
+    cover_image_url: article.cover_image_url || null,
+  };
+  const res = await sb('/rest/v1/articles', 'POST', payload);
+  if (!res.ok) {
+    const err = await res.text();
+    if (err.includes('duplicate')||err.includes('unique')) {
+      // Coba dengan slug unik
+      payload.slug = article.slug + '-' + Date.now().toString(36);
+      const res2 = await sb('/rest/v1/articles', 'POST', payload);
+      if (!res2.ok) throw new Error(await res2.text());
+    } else throw new Error(err.substring(0,100));
+  }
+  await loadArticles();
+  renderDashboard();
+}
+
+function sleep(ms) { return new Promise(r=>setTimeout(r,ms)); }
+
+</script>
+</body>
+</html>
